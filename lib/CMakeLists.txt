@@ -1,0 +1,6 @@
+add_subdirectory(data_formats)
+add_subdirectory(objects_generator)
+add_subdirectory(visualizer)
+add_subdirectory(dynamics)
+add_subdirectory(params_manager)
+add_subdirectory(logger)

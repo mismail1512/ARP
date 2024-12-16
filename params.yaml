@@ -1,0 +1,40 @@
+# Parameters related to the drone's physical characteristics and dynamics
+drone:
+  mass: 1.0                     # Mass of the drone in kg
+  viscous_coefficient: 1.0      # Viscous resistance coefficient (N·s·m)
+  max_acceleration: 10.0        # Maximum acceleration (m/s^2)
+  max_velocity: 20.0            # Maximum velocity (m/s)
+  force_step: 1.0               # Force increment per key press (N)
+  repulsion_distance: 5.0       # Distance within which obstacles repel the drone (m)
+  repulsion_factor: 0.5         # Strength of the repulsion force (η)
+
+
+
+# Simulation configuration
+simulation:
+  time_step: 0.1               # Time step for Euler's integration (seconds)
+
+
+# Obstacle generation parameters
+#obstacles:
+ # max_obstacles: 10             # Maximum number of obstacles
+  #obstacle_lifetime: 10.0       # Lifetime of obstacles before disappearing (seconds)
+  #spawn_rate: 1.0               # Rate of obstacle spawning (obstacles/second)
+
+# Target generation parameters
+#targets:
+#  max_targets: 5                # Maximum number of targets
+#  target_lifetime: 10.0         # Lifetime of targets before disappearing (seconds)
+#  attraction_factor: 1.0        # Strength of the attractive force for targets
+
+
+# Watchdog configuration
+#watchdog:
+#  process_timeout: 5  # seconds
+#  watchdog_timeout: 10  # seconds
+
+# logging
+#logging:
+#  enable: true
+#  log_file: "targets_gen.log"
+#  verbosity: "info"  # Possible values: "info", "warning", "error"
