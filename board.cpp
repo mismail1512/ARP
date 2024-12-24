@@ -31,9 +31,14 @@ void handleresetSignal(int signal) {
     }
 }
 
-
+int calcScore(int targets ,double time,float distance){
+    float targetsRatio = static_cast<float>(target_number-targets)/target_number;
+    return w1*targetsRatio-w2*time - w3*distance ;
+}
 int main()
 {
+    double time = 0.0;
+    float distance = 0.0;
     pid_t pid = getpid();  // Get the process ID
    logger log("./logs/board.log", pid); // Initialize logger for this process with a unique log file
 
@@ -107,6 +112,7 @@ int main()
     all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
     bool wroteToDynamics = false;
     tempWorldState = worldState;
+    int targetsNumber=0;
     while(true){
         
         // Log heartbeat to indicate that the process is still active
@@ -132,50 +138,36 @@ int main()
             write(board_to_targets_fd,&worldState,sizeof(worldState));
         tempWorldState = worldState;
         usleep(UPDATE_TIME);
+        // considering simulation time and assuming processing time is negligible
+        time += static_cast<double>(UPDATE_TIME*pow(10,-6));
         // read new obstacles and targets
-        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))  /////////////////
+        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))  
             read(input_to_board_pipe_fd,&worldState.cmd,sizeof(worldState.cmd));
 
-     if (reset==true) 
-        {
+        if (reset==true) 
+            {
+                drone_position = {1.0, 1.0};
+                worldState.drone_position = drone_position;
+                // Notify dynamics about the reset
+                write(dynamics_to_board_fd, &worldState, sizeof(worldState));
 
-     std::cout << "wwwwwwwwwwwwwwwwwwwwww111111 " << std::endl;
+                // Reinitialize obstacles and targets
+                write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
 
-  drone_position = {1.0, 1.0};
-    worldState.drone_position = drone_position;
-      // Notify dynamics about the reset
-    write(dynamics_to_board_fd, &worldState, sizeof(worldState));
-    std::cout<<"1111"<< drone_position<< std::endl;
-
-    // Reinitialize obstacles and targets
-    write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
-        std::cout<<"2222"<< drone_position<< std::endl;
-
-    read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
-        std::cout<<"3333"<< drone_position<< std::endl;
+                read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
 
 
-    write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
-        std::cout<<"444"<< drone_position<< std::endl;
+                write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
 
-    read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
-        std::cout<<"5555"<< drone_position<< std::endl;
+                read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
 
-
-  
-
-    // Update all_obstacles to reflect the new world state
-    all_obstacles.clear();
-    all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
-    all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
-        std::cout<<"6666"<< drone_position<< std::endl;
-
-
-  reset= false;
+                // Update all_obstacles to reflect the new world state
+                all_obstacles.clear();
+                all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
+                all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
+                reset= false;
 
             }
-                std::cout<<"7777"<< drone_position<< std::endl;
-                sleep(2);
 
         
             
@@ -183,8 +175,6 @@ int main()
             read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
         if(FD_ISSET(targets_to_board_fd,&r_fds))
             read(targets_to_board_fd,&worldState.targets_positions,sizeof(worldState.targets_positions));
-    std::cout<<"88888"<< drone_position<< std::endl;
-                sleep(2);
 
 
         if (FD_ISSET(board_to_dynamics_fd,&w_fds))
@@ -192,8 +182,6 @@ int main()
             write(board_to_dynamics_fd,&worldState,sizeof(worldState));
             wroteToDynamics = true;
         }
-            std::cout<<"9999"<< drone_position<< std::endl;
-                            sleep(2);
 
 
         if(FD_ISSET(dynamics_to_board_fd,&r_fds) && wroteToDynamics)
@@ -202,7 +190,6 @@ int main()
             read(dynamics_to_board_fd,&drone_position,sizeof(drone_position));
             // std::cout << "reading drone pos " << drone_position << std::endl;
         }
-            std::cout<<"100"<< drone_position<< std::endl;
 
         worldState.drone_position = drone_position;
 
@@ -225,7 +212,20 @@ int main()
             // invalid state
             // fall into the previous state
             worldState = tempWorldState;
-        }       
+        } 
+        else{
+            distance += tempWorldState.drone_position.dist(worldState.drone_position);
+        }     
+        targetsNumber=0;
+        
+        for (const Point& point:worldState.targets_positions){
+            if(!point.isNull()){
+                targetsNumber++;
+            }
+                
+        }
+            
+        worldState.score = calcScore(targetsNumber,time,distance); 
         
     }
     close(windowfd);

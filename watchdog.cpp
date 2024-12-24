@@ -111,7 +111,7 @@ void terminate_all_processes(const std::string& log_directory) {
 
 int main() {
     sleep(10);
-    std::string log_directory = "/home/mohamed/Downloads/ARP/project1/logs"; // Directory containing log files
+    std::string log_directory = "./logs"; // Directory containing log files
     int timeout_seconds = 5; // Timeout in seconds
 
     pid_t pid = getpid(); // Get the current process ID

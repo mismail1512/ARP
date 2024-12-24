@@ -36,7 +36,7 @@ void Visualizer::initializeNcurses()
 }
 WINDOW*  Visualizer::generateWindow()
 {
-    WINDOW* win = newwin(borders.height, borders.width, borders.startY, borders.startX);
+    WINDOW* win = newwin(borders.height+1, borders.width+1, borders.startY, borders.startX);
     if (!win) {
         endwin();
         std::cerr << "Error: Failed to create window.\n";
@@ -48,12 +48,12 @@ void Visualizer::drawBorders(WINDOW* win)
 {
     wattron(win, COLOR_PAIR(4)); // Use red color
     for (int x = 0; x < borders.width; ++x) {
-        mvwaddch(win, 0, x, '#');                // Top border
-        mvwaddch(win, borders.height - 1, x, '#');  // Bottom border
+        mvwaddch(win, 1, x, '#');                // Top border
+        mvwaddch(win, borders.height , x, '#');  // Bottom border
     }
-    for (int y = 0; y < borders.height; ++y) {
+    for (int y = 1; y < borders.height+1; ++y) {
         mvwaddch(win, y, 0, '#');                // Left border
-        mvwaddch(win, y, borders.width - 1, '#');   // Right border
+        mvwaddch(win, y, borders.width , '#');   // Right border
     }
     wattroff(win, COLOR_PAIR(4));
 }
@@ -62,10 +62,10 @@ void Visualizer::drawBorders(WINDOW* win)
 
 void Visualizer::drawDrone(WINDOW* win,const Point& dronePosition) {
     if (prevDrone.x != -1 && prevDrone.y != -1) {
-        mvwaddch(win, prevDrone.y, prevDrone.x, ' '); // Erase old position
+        mvwaddch(win, prevDrone.y+1, prevDrone.x, ' '); // Erase old position
     }
     wattron(win, COLOR_PAIR(1)); // Use blue color
-    mvwaddch(win, static_cast<int>(dronePosition.y), static_cast<int>(dronePosition.x), '+');
+    mvwaddch(win, static_cast<int>(dronePosition.y+1), static_cast<int>(dronePosition.x), '+');
     wattroff(win, COLOR_PAIR(1));
     prevDrone = dronePosition;
 }
@@ -73,17 +73,18 @@ void Visualizer::drawDrone(WINDOW* win,const Point& dronePosition) {
 
 void Visualizer::drawTargets(WINDOW* win,const std::vector<Point>& targets) {
     wattron(win, COLOR_PAIR(2)); // Use green color
-    int i=0;
     for (const auto& target : previousTargets) {
         if(target.isNull())
             continue;
-        mvwaddch(win, target.y, target.x, ' ');
+        mvwaddch(win, target.y+1, target.x, ' ');
     }
+    int i = 0;
     for (const auto& target : targets) {
+        i++;
         if(target.isNull())
             continue;
-        mvwprintw(win, target.y, target.x, "%d", i);
-        i++;
+        mvwprintw(win, target.y+1, target.x, "%d", i);
+        
     }
     wattroff(win, COLOR_PAIR(2));
     previousTargets = targets;
@@ -96,12 +97,12 @@ void Visualizer::drawObstacles(WINDOW* win,const std::vector<Point>& obstacles) 
     for (const auto& obstacle : previousObstacles) {
         if(obstacle.isNull())
             continue;
-        mvwaddch(win, obstacle.y, obstacle.x, ' ');
+        mvwaddch(win, obstacle.y+1, obstacle.x, ' ');
     }
     for (const auto& obstacle : obstacles) {
         if(obstacle.isNull())
             continue;
-        mvwaddch(win, obstacle.y, obstacle.x, 'O');
+        mvwaddch(win, obstacle.y+1, obstacle.x, 'O');
     }
     wattroff(win, COLOR_PAIR(3));
     previousObstacles = obstacles;

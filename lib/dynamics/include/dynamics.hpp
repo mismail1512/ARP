@@ -19,7 +19,7 @@ class Dynamics
         double M = 1.0; // kg
         // repulsion coffecients
         double p = 5.0;
-        double n = 3.0;
+        double n = 2.0;
         
     
 

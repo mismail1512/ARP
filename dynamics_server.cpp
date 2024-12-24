@@ -120,7 +120,6 @@ std::ofstream pidFile("/tmp/dynamic.pid");
         // ,std::vector<int>{dynamics_to_board_fd});
 
         // if (FD_ISSET(dynamics_to_board_fd,&w_fds))
-            std::cout<<"from dynamics drone_position: "<< drone_position<< std::endl;
 
         write(dynamics_to_board_fd,&drone_position,sizeof(drone_position));
         usleep(2*UPDATE_TIME);
