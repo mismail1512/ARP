@@ -54,6 +54,7 @@ struct WorldState
     Point targets_positions[T2];
     Command cmd = Command::UNKNOWN;
     int startX, startY, width, height;
+    int score = 0;
     
 };
 #pragma pack()
