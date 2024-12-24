@@ -1,6 +1,6 @@
 ./build/obstacles_gen &
 ./build/targets_gen &
-#./build/board &
+./build/board &
 ./build/dynamics_server &
 ./build/input #&
 

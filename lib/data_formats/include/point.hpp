@@ -6,7 +6,7 @@ struct Point
     double x;
     double y;
     bool isNull() const {
-        return x == NAN || y == NAN; // Define your own criteria for "null"
+        return std::isnan(x) || std::isnan(y);
     }
     // Overload == operator to compare points
     bool operator==(const Point& other) const {

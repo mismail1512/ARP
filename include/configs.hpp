@@ -15,8 +15,9 @@
 constexpr int target_number = 3;
 constexpr int obstacles_number = 3;
 
-constexpr int w1 = 75;
-constexpr int w2 = 0.25;
+constexpr float w1 = 100;
+constexpr float w2 = 0.1; // -1 every 10 seconds
+constexpr float w3 = 0.1; // -1 after distance 10
 
 void selectPipes(fd_set& r_fds,fd_set& w_fds,const std::vector<int>& readPipes,const std::vector<int>& writePipes){
     

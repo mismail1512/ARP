@@ -31,13 +31,13 @@ void handleresetSignal(int signal) {
     }
 }
 
-int calcScore(int targets,int obstacles,int ,float time,float distance){
-    return w1*((target_number-targets)/target_number)*(distance/time) - w2*obstacles;
+int calcScore(int targets ,double time,float distance){
+    float targetsRatio = static_cast<float>(target_number-targets)/target_number;
+    return w1*targetsRatio-w2*time - w3*distance ;
 }
 int main()
 {
-    int obstaclesHitCount = 0;
-    float time = 0.0;
+    double time = 0.0;
     float distance = 0.0;
     pid_t pid = getpid();  // Get the process ID
    logger log("./logs/board.log", pid); // Initialize logger for this process with a unique log file
@@ -112,6 +112,7 @@ int main()
     all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
     bool wroteToDynamics = false;
     tempWorldState = worldState;
+    int targetsNumber=0;
     while(true){
         
         // Log heartbeat to indicate that the process is still active
@@ -137,39 +138,34 @@ int main()
             write(board_to_targets_fd,&worldState,sizeof(worldState));
         tempWorldState = worldState;
         usleep(UPDATE_TIME);
+        // considering simulation time and assuming processing time is negligible
+        time += static_cast<double>(UPDATE_TIME*pow(10,-6));
         // read new obstacles and targets
-        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))  /////////////////
+        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))  
             read(input_to_board_pipe_fd,&worldState.cmd,sizeof(worldState.cmd));
 
-     if (reset==true) 
-        {
+        if (reset==true) 
+            {
+                drone_position = {1.0, 1.0};
+                worldState.drone_position = drone_position;
+                // Notify dynamics about the reset
+                write(dynamics_to_board_fd, &worldState, sizeof(worldState));
+
+                // Reinitialize obstacles and targets
+                write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
+
+                read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
 
 
-  drone_position = {1.0, 1.0};
-    worldState.drone_position = drone_position;
-      // Notify dynamics about the reset
-    write(dynamics_to_board_fd, &worldState, sizeof(worldState));
+                write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
 
-    // Reinitialize obstacles and targets
-    write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
+                read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
 
-    read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
-
-
-    write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
-
-    read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
-
-
-  
-
-    // Update all_obstacles to reflect the new world state
-    all_obstacles.clear();
-    all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
-    all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
-
-
-  reset= false;
+                // Update all_obstacles to reflect the new world state
+                all_obstacles.clear();
+                all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
+                all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
+                reset= false;
 
             }
 
@@ -216,8 +212,20 @@ int main()
             // invalid state
             // fall into the previous state
             worldState = tempWorldState;
-            obstaclesHitCount ++;
-        }       
+        } 
+        else{
+            distance += tempWorldState.drone_position.dist(worldState.drone_position);
+        }     
+        targetsNumber=0;
+        
+        for (const Point& point:worldState.targets_positions){
+            if(!point.isNull()){
+                targetsNumber++;
+            }
+                
+        }
+            
+        worldState.score = calcScore(targetsNumber,time,distance); 
         
     }
     close(windowfd);
