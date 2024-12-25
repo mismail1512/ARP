@@ -102,8 +102,9 @@ Point Dynamics::calcForce(const Point positions[3] ,const std::vector<Point>& ob
 {
     Point force{0,0};
     force = force+calcCommandForce(command);
-    force = force+calcInertialForce(positions);
-    // std::cout << " force after inertia" << force << std::endl;
+    force = force + ((positions[2]-positions[1])*-K)/T;
+    std::cout << " force because of viscosuity " << ((positions[2]-positions[1])*-K)/T << std::endl;
+    // force = force+calcInertialForce(positions);
     force = force+calcRepulsionForce(positions[2],obstacles_pos);
     // std::cout << "force after repulsion" << force << std::endl;
     return force;
@@ -112,8 +113,10 @@ Point Dynamics::calcForce(const Point positions[3] ,const std::vector<Point>& ob
 Point Dynamics::calcForce(const Point positions[3],const std::vector<Point>& obstacles_pos)
 {
     Point force{0,0};
-    force = force+calcInertialForce(positions);
-    // std::cout << " force after inertia" << force << std::endl;
+    // force = force+calcInertialForce(positions);
+    force = force + ((positions[2]-positions[1])*-K)/T;
+    std::cout << " force because of viscosuity " << ((positions[2]-positions[1])*-K)/T << std::endl;
+
     force = force+calcRepulsionForce(positions[2],obstacles_pos);
     // std::cout << "force after repulsion" << force << std::endl;
     return force;
@@ -127,7 +130,12 @@ Point Dynamics::updatePos(const Point positions[3],const Point& force)
     Point v = (positions[2]-positions[1])/T+ a*T;
     v.x = fmax(fmin(v.x,max_v*T),-max_v*T);
     v.y = fmax(fmin(v.y,max_v*T),-max_v*T);
-    
+    std::cout << "a " << a <<std::endl;
+    std::cout << "v " << v <<std::endl;
+    std::cout << "0 " << positions[0] << std::endl;
+    std::cout << "1 " << positions[1] << std::endl;
+    std::cout << "2 " << positions[2] << std::endl;
+
 
     Point translation = v*T;
     return positions[2] + translation;
