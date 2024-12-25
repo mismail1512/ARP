@@ -10,7 +10,7 @@
 #define board_to_dynamics_pipe "/tmp/board_to_dynamics"
 #define input_to_board_pipe "/tmp/input_to_board"
 
-#define UPDATE_TIME 5000
+#define UPDATE_TIME 10000
 
 constexpr int target_number = 3;
 constexpr int obstacles_number = 3;

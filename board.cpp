@@ -67,18 +67,59 @@ int main()
     mkfifo(board_to_targets_pipe, 0666);
     int board_to_targets_fd = open(board_to_targets_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
 
-    mkfifo(dynamics_to_board_pipe, 0666);
-    int dynamics_to_board_fd = open(dynamics_to_board_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
 
-    mkfifo(board_to_dynamics_pipe, 0666);
-    int board_to_dynamics_fd = open(board_to_dynamics_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
+
+
+    int fd1[2];
+    if (pipe(fd1) == -1) {
+        perror("pipe failed");
+        exit(1);
+    }
+    int fd2[2];
+    if (pipe(fd2) == -1) {
+        perror("pipe failed");
+        exit(1);
+    }
+    int dynamics_to_board_fd_read = fd1[0];
+    int dynamics_to_board_fd_write = fd1[1];
+    int board_to_dynamics_fd_read = fd2[0];
+    int board_to_dynamics_fd_write = fd2[1];
+
+    pid = fork();
+
+    if (pid < 0) {
+        perror("fork failed");
+        exit(1);
+    } else if (pid == 0) {
+        close(dynamics_to_board_fd_read);
+        close(board_to_dynamics_fd_write);
+        // Convert fd[0] to a string and set it as an environment variable
+
+        char fd0_str[10];
+        char fd1_str[10];
+        snprintf(fd0_str, sizeof(fd0_str), "%d", dynamics_to_board_fd_write);
+        snprintf(fd1_str, sizeof(fd1_str), "%d", board_to_dynamics_fd_read);
+        setenv("dynamics_to_board_fd_write", fd0_str, 1);  // Set MY_FD in the environment
+        setenv("board_to_dynamics_fd_read", fd1_str, 1);
+        // Execute process_P
+        execl("./build/dynamics_server", "dynamics_server", NULL);
+        // If exec fails
+        perror("exec failed");
+        exit(1);
+    }
+    close(board_to_dynamics_fd_read);
+    close(dynamics_to_board_fd_write);
+    // mkfifo(dynamics_to_board_pipe, 0666);
+    // int dynamics_to_board_fd = open(dynamics_to_board_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
+
+    // mkfifo(board_to_dynamics_pipe, 0666);
+    // int board_to_dynamics_fd = open(board_to_dynamics_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
     
     mkfifo(input_to_board_pipe, 0666);
     int input_to_board_pipe_fd = open(input_to_board_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
     
-    
     // initializations
-    WindowBorders borders{0,0,10,10};
+    WindowBorders borders{0,0,50,50};
     Point drone_position{5.0,5.0};
     Point temp_drone_position{5.0,5.0};
     Command cmd{Command::f};
@@ -100,7 +141,7 @@ int main()
     // generate obstacles
     read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
 
-    write(dynamics_to_board_fd,&worldState,sizeof(worldState));
+    write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
     
     ObjectsGenerator obstacles_obj_gen{borders.startX,borders.startX+borders.width-1,borders.startY,borders.startY+borders.height-1,obstacles_number};
     // get all obstacle points
@@ -121,8 +162,8 @@ int main()
          //   std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         //}
         
-        selectPipes(r_fds,w_fds,std::vector<int>{obstacles_to_board_pipe_fd,targets_to_board_fd,dynamics_to_board_fd,input_to_board_pipe_fd}
-        ,std::vector<int>{windowfd,board_to_obstacles_fd,board_to_targets_fd,board_to_dynamics_fd});
+        selectPipes(r_fds,w_fds,std::vector<int>{obstacles_to_board_pipe_fd,targets_to_board_fd,dynamics_to_board_fd_read,input_to_board_pipe_fd}
+        ,std::vector<int>{windowfd,board_to_obstacles_fd,board_to_targets_fd,board_to_dynamics_fd_write});
 
         // update all the processes with current state
         if(FD_ISSET(windowfd,&w_fds))
@@ -141,15 +182,17 @@ int main()
         // considering simulation time and assuming processing time is negligible
         time += static_cast<double>(UPDATE_TIME*pow(10,-6));
         // read new obstacles and targets
-        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))  
+        if(FD_ISSET(input_to_board_pipe_fd,&r_fds))
             read(input_to_board_pipe_fd,&worldState.cmd,sizeof(worldState.cmd));
+        else
+            worldState.cmd = Command::UNKNOWN;
 
         if (reset==true) 
             {
                 drone_position = {1.0, 1.0};
                 worldState.drone_position = drone_position;
                 // Notify dynamics about the reset
-                write(dynamics_to_board_fd, &worldState, sizeof(worldState));
+                write(board_to_dynamics_fd_write, &worldState, sizeof(worldState));
 
                 // Reinitialize obstacles and targets
                 write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
@@ -177,17 +220,17 @@ int main()
             read(targets_to_board_fd,&worldState.targets_positions,sizeof(worldState.targets_positions));
 
 
-        if (FD_ISSET(board_to_dynamics_fd,&w_fds))
+        if (FD_ISSET(board_to_dynamics_fd_write,&w_fds))
         {
-            write(board_to_dynamics_fd,&worldState,sizeof(worldState));
+            write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
             wroteToDynamics = true;
         }
 
 
-        if(FD_ISSET(dynamics_to_board_fd,&r_fds) && wroteToDynamics)
+        if(FD_ISSET(dynamics_to_board_fd_read,&r_fds) && wroteToDynamics)
         {
             wroteToDynamics = false;
-            read(dynamics_to_board_fd,&drone_position,sizeof(drone_position));
+            read(dynamics_to_board_fd_read,&drone_position,sizeof(drone_position));
             // std::cout << "reading drone pos " << drone_position << std::endl;
         }
 
@@ -206,7 +249,8 @@ int main()
         temp_drone_position.y = round(drone_position.y);
 
             
-        if(std::find(all_obstacles.begin(), all_obstacles.end(), temp_drone_position) != all_obstacles.end())
+        if(std::find(all_obstacles.begin(), all_obstacles.end(), temp_drone_position) != all_obstacles.end()
+        || temp_drone_position.x> borders.startX+borders.width || temp_drone_position.x> borders.startY+borders.height+1)
         {
             // obstacle in the same place as the drone
             // invalid state
@@ -233,8 +277,8 @@ int main()
     close(obstacles_to_board_pipe_fd);
     close(targets_to_board_fd);
     close(board_to_targets_fd);
-    close(dynamics_to_board_fd);
-    close(board_to_dynamics_fd);
+    close(dynamics_to_board_fd_read);
+    close(board_to_dynamics_fd_write);
     return 0;
 }
 

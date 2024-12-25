@@ -60,22 +60,42 @@ int main()
     logger log("./logs/dybanics_server.log", pid); // Initialize logger for this process with a unique log file
 
 
-std::ofstream pidFile("/tmp/dynamic.pid");
+    std::ofstream pidFile("/tmp/dynamic.pid");
     pidFile << pid;
     pidFile.close();
 
-// Register the signal handlers
+    // Register the signal handlers
     signal(SIGUSR1, handlePauseSignal);
     signal(SIGUSR2, handleResumeSignal);
 
     fd_set r_fds, w_fds;
-    mkfifo(dynamics_to_board_pipe, 0666);
-    int dynamics_to_board_fd = open(dynamics_to_board_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
+    // mkfifo(dynamics_to_board_pipe, 0666);
+    // int dynamics_to_board_fd = open(dynamics_to_board_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
 
-    mkfifo(board_to_dynamics_pipe, 0666);
-    int board_to_dynamics_fd = open(board_to_dynamics_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
+    // mkfifo(board_to_dynamics_pipe, 0666);
+    // int board_to_dynamics_fd = open(board_to_dynamics_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
+
+    char *fd_str = getenv("dynamics_to_board_fd_write");
+    if (fd_str == NULL) {
+        fprintf(stderr, "Environment variable dynamics_to_board_fd_write not found\n");
+        exit(1);
+    }
+
+    // Convert fd_str to an integer
+    int dynamics_to_board_fd_write = atoi(fd_str);
+
+    fd_str = getenv("board_to_dynamics_fd_read");
+    if (fd_str == NULL) {
+        fprintf(stderr, "Environment variable board_to_dynamics_fd_read not found\n");
+        exit(1);
+    }
+
+
+    // Convert fd_str to an integer
+    int board_to_dynamics_fd_read = atoi(fd_str);
     // initializations
-    
+    std::cout << board_to_dynamics_fd_read << std::endl;
+    std::cout << dynamics_to_board_fd_write << std::endl;
     Point drone_position{5.0,5.0};
     WorldState<obstacles_number,target_number> worldState{drone_position};
     Dynamics dynamics{};
@@ -86,7 +106,7 @@ std::ofstream pidFile("/tmp/dynamic.pid");
     
 
     worldState.setBorder(borders);
-    read(board_to_dynamics_fd,&worldState,sizeof(worldState));
+    read(board_to_dynamics_fd_read,&worldState,sizeof(worldState));
     borders = worldState.getBorder();
     Point positions_hist[3] = {worldState.drone_position,worldState.drone_position,worldState.drone_position};
     ObjectsGenerator obstacles_obj_gen{borders.startX,borders.startX+borders.width-1,borders.startY,borders.startY+borders.height-1,obstacles_number};
@@ -111,20 +131,30 @@ std::ofstream pidFile("/tmp/dynamic.pid");
         force = dynamics.calcForce(positions_hist,all_obstacles,worldState.cmd);
         printCmd(worldState.cmd);
         // update the position of the drone
-        drone_position = dynamics.updatePos(positions_hist,force);
-        positions_hist[0] = positions_hist[1];
-        positions_hist[1] = positions_hist[2];
-        positions_hist[2] = drone_position;
+        if(worldState.cmd==Command::d){
+            positions_hist[0] = drone_position;
+            positions_hist[1] = drone_position;
+            positions_hist[2] = drone_position;
+        }
+        else{
+            drone_position = dynamics.updatePos(positions_hist,force);
+            positions_hist[0] = positions_hist[1];
+            positions_hist[1] = positions_hist[2];
+            positions_hist[2] = drone_position;
+        }
+            
+        
+
 
         // selectPipes(r_fds,w_fds,std::vector<int>{board_to_dynamics_fd}
         // ,std::vector<int>{dynamics_to_board_fd});
 
         // if (FD_ISSET(dynamics_to_board_fd,&w_fds))
 
-        write(dynamics_to_board_fd,&drone_position,sizeof(drone_position));
-        usleep(2*UPDATE_TIME);
+        write(dynamics_to_board_fd_write,&drone_position,sizeof(drone_position));
+        usleep(UPDATE_TIME);
         // update info 
-        int k = read(board_to_dynamics_fd,&worldState,sizeof(worldState));
+        int k = read(board_to_dynamics_fd_read,&worldState,sizeof(worldState));
         if(k==0)
             continue;
         // update obstacles info
@@ -139,7 +169,7 @@ std::ofstream pidFile("/tmp/dynamic.pid");
         
         
     }
-    close(dynamics_to_board_fd);
-    close(board_to_dynamics_fd);
+    close(dynamics_to_board_fd_write);
+    close(board_to_dynamics_fd_read);
     return 0;
 }
