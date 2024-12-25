@@ -11,6 +11,7 @@ logger::logger(const char* logfile, pid_t pid) : log_file_path(logfile), process
     
     int fd = open(logfile, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR,0666);
     if (fd < 0) {
+        std::cerr << "here"<<std::endl;
         std::cerr << "Failed to open log file: " << logfile << std::endl;
         exit(1);
     }
