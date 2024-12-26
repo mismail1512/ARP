@@ -22,14 +22,14 @@ Point x;
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
 
-int reset= false;
+bool reset= false;
 
 void handleresetSignal(int signal) {
-    if (signal == SIGUSR1) { 
 
         reset= true;
-    }
+        std::cout <<"reset= true"<< std::endl;
 }
+
 
 int calcScore(int targets ,double time,float distance){
     float targetsRatio = static_cast<float>(target_number-targets)/target_number;
@@ -48,7 +48,10 @@ int main()
     pidFile.close();
 
     // Register the signal handlers
-    signal(SIGUSR1, handleresetSignal);
+    signal(SIGUSR2, handleresetSignal);
+   
+    
+
     //signal(SIGUSR2, handleResumeSignal);
 
     fd_set r_fds, w_fds;
@@ -156,6 +159,8 @@ int main()
     int targetsNumber=0;
     while(true){
         
+        signal(SIGUSR1, handleresetSignal);
+
         // Log heartbeat to indicate that the process is still active
         log.logHeartbeat();  // Log heartbeat at each iteration to ensure the watchdog monitors this process
        // while (shouldPause.load()) {
@@ -189,43 +194,47 @@ int main()
 
         if (reset==true) 
             {
-                drone_position = {1.0, 1.0};
+
+                drone_position = {5.0, 5.0};
                 worldState.drone_position = drone_position;
+                worldState.score = 0;
+                 
+                WorldState<obstacles_number,3> worldState{drone_position};
+                WorldState<obstacles_number,3> tempWorldState{drone_position};
+
+              
+
                 // Notify dynamics about the reset
                 write(board_to_dynamics_fd_write, &worldState, sizeof(worldState));
 
                 // Reinitialize obstacles and targets
                 write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
 
-                read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
 
 
                 write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
 
-                read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
+                
 
-                // Update all_obstacles to reflect the new world state
-                all_obstacles.clear();
-                all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
-                all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
                 reset= false;
 
-            }
 
+            }
+            
         
             
         if(FD_ISSET(obstacles_to_board_pipe_fd,&r_fds))
             read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
         if(FD_ISSET(targets_to_board_fd,&r_fds))
             read(targets_to_board_fd,&worldState.targets_positions,sizeof(worldState.targets_positions));
-
+            
 
         if (FD_ISSET(board_to_dynamics_fd_write,&w_fds))
         {
             write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
             wroteToDynamics = true;
         }
-
+             
 
         if(FD_ISSET(dynamics_to_board_fd_read,&r_fds) && wroteToDynamics)
         {
@@ -236,7 +245,7 @@ int main()
 
         worldState.drone_position = drone_position;
 
-            
+         
     
         // update all obstacles
         i =0;
@@ -268,9 +277,9 @@ int main()
             }
                 
         }
-            
+       
         worldState.score = calcScore(targetsNumber,time,distance); 
-        
+            
     }
     close(windowfd);
     close(board_to_obstacles_fd);

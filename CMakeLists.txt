@@ -45,7 +45,7 @@ target_link_libraries(window PRIVATE data_formats visualizer ncurses logger)
 
 target_link_libraries(obstacles_gen PRIVATE data_formats objects_generator logger)
 target_link_libraries(targets_gen PRIVATE data_formats objects_generator logger)
-target_link_libraries(dynamics_server PRIVATE data_formats objects_generator dynamics logger)
+target_link_libraries(dynamics_server PRIVATE params_manager data_formats objects_generator dynamics logger)
 target_link_libraries(input PRIVATE data_formats logger)
 target_link_libraries(watchdog PRIVATE data_formats logger)
 target_link_libraries(Master_Process PRIVATE data_formats objects_generator visualizer dynamics ncurses logger)

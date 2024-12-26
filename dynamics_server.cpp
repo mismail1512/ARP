@@ -15,7 +15,6 @@
 
 #include <fstream>
 #include <csignal>
-#include <csignal>
 #include <atomic>
 #include <chrono>
 #include <thread>
@@ -57,7 +56,7 @@ void printCmd(Command cmd){
 int main()
 {
      pid_t pid = getpid();  // Get the process ID
-    logger log("./logs/dybanics_server.log", pid); // Initialize logger for this process with a unique log file
+    logger log("./logs/dynamics_server.log", pid); // Initialize logger for this process with a unique log file
 
 
     std::ofstream pidFile("/tmp/dynamic.pid");
@@ -166,7 +165,8 @@ int main()
         // update drone position
         // positions_hist[2] = worldState.drone_position;
 
-        
+       // dynamics.refresh();
+
         
     }
     close(dynamics_to_board_fd_write);

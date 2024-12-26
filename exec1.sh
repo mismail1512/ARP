@@ -1,1 +1,1 @@
-./build/window
+./build/board
