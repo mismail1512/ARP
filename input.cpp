@@ -77,14 +77,14 @@ int main() {
                 // Send the appropriate signal based on the command
                 if (cmd == Command::p) {
                     // Pause the window process
-                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(obsProcessPID, SIGUSR1) == 0)&& (kill(targProcessPID, SIGUSR1) == 0&& (kill(watchdogProcessPID, SIGUSR1) == 0))) {
+                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(obsProcessPID, SIGUSR1) == 0)&& (kill(targProcessPID, SIGUSR1) == 0&& (kill(watchdogProcessPID, SIGUSR1) == 0)&& (kill(boardProcessPID, SIGUSR1) == 0))) {
                         std::cout << "Signal sent successfully to pause process (PID: " << dynmaicProcessPID<< ", " << obsProcessPID<< ", " <<  targProcessPID<<", "<<  watchdogProcessPID<<std::endl;
                     } else {
                         perror("Failed to send pause signal");
                     }
                 } else if (cmd == Command::st) {
                     // Resume the window process
-                    if ((kill(dynmaicProcessPID, SIGUSR2) == 0)&& (kill(obsProcessPID, SIGUSR2) == 0)&& (kill(targProcessPID, SIGUSR2) == 0&& (kill(watchdogProcessPID, SIGUSR2) == 0))) {
+                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(obsProcessPID, SIGUSR2) == 0)&& (kill(targProcessPID, SIGUSR2) == 0&& (kill(watchdogProcessPID, SIGUSR2) == 0)&& (kill(boardProcessPID, SIGUSR1) == 0))) {
                         std::cout << "Signal sent successfully to start process (PID: " << dynmaicProcessPID<< ", " << obsProcessPID<< ", " <<  targProcessPID <<", " <<  watchdogProcessPID<<std::endl;
                     } 
                     
@@ -97,7 +97,7 @@ int main() {
             {
 
                     // reset the window process
-                    if (kill(boardProcessPID, SIGUSR2) == 0)
+                    if (kill(boardProcessPID, SIGUSR2) == 0&& (kill(dynmaicProcessPID, SIGUSR2) == 0))
                     {
                     std::cout << "Signal sent successfully to reset process (PID: " << boardProcessPID<<std::endl;
                     } 

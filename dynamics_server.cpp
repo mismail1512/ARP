@@ -21,18 +21,21 @@
 
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
+bool reset= false;
 
-void handlePauseSignal(int signal) {
+void handlePauseResumeSignal(int signal) {
     if (signal == SIGUSR1) { // 'p'
-        //std::cout << "Window process: Received 'p'. Pausing..." << std::endl;
-        shouldPause.store(true);
+        // Toggle the pause state
+        bool current = shouldPause.load();
+        shouldPause.store(!current); // Flip the state
     }
 }
 
-void handleResumeSignal(int signal) {
+
+void handleResetSignal(int signal) {
     if (signal == SIGUSR2) { // 'st'
-        //std::cout << "Window process: Received 'st'. Resuming..." << std::endl;
-        shouldPause.store(false);
+        std::cout << " reset =true;.." << std::endl;
+      reset =true;
     }
 }
 
@@ -64,8 +67,8 @@ int main()
     pidFile.close();
 
     // Register the signal handlers
-    signal(SIGUSR1, handlePauseSignal);
-    signal(SIGUSR2, handleResumeSignal);
+    signal(SIGUSR1, handlePauseResumeSignal);
+    signal(SIGUSR2, handleResetSignal);
 
     fd_set r_fds, w_fds;
     // mkfifo(dynamics_to_board_pipe, 0666);
@@ -126,6 +129,7 @@ int main()
         while (shouldPause.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         }
+        
         // update force
         force = dynamics.calcForce(positions_hist,all_obstacles,worldState.cmd);
         printCmd(worldState.cmd);
@@ -142,7 +146,6 @@ int main()
             positions_hist[2] = drone_position;
         }
             
-        
 
 
         // selectPipes(r_fds,w_fds,std::vector<int>{board_to_dynamics_fd}
@@ -152,6 +155,14 @@ int main()
 
         write(dynamics_to_board_fd_write,&drone_position,sizeof(drone_position));
         usleep(UPDATE_TIME);
+        if (reset){
+            drone_position = {5.0,5.0};
+            positions_hist[0] = {5.0,5.0};
+            positions_hist[1] = {5.0,5.0};
+            positions_hist[2] = {5.0,5.0};
+            reset = false;
+
+        }
         // update info 
         int k = read(board_to_dynamics_fd_read,&worldState,sizeof(worldState));
         if(k==0)
@@ -165,7 +176,7 @@ int main()
         // update drone position
         // positions_hist[2] = worldState.drone_position;
 
-       // dynamics.refresh();
+        dynamics.refresh();
 
         
     }

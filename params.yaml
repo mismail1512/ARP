@@ -1,11 +1,11 @@
 # Parameters related to the drone's physical characteristics and dynamics
 drone:
-  mass: 1.0                   # Mass of the drone in kg
-  viscous_coefficient: 1.0      # Viscous resistance coefficient (N·s·m)
+  mass: 1.0                  # Mass of the drone in kg
+  viscous_coefficient: 0.01      # Viscous resistance coefficient (N·s·m)
   max_acceleration: 10.0        # Maximum acceleration (m/s^2)
   max_velocity: 20.0            # Maximum velocity (m/s)
   force_step: 1.0               # Force increment per key press (N)
-  repulsion_distance: 5.0       # Distance within which obstacles repel the drone (m)
+  repulsion_distance: 3.0       # Distance within which obstacles repel the drone (m)
   repulsion_factor: 0.5         # Strength of the repulsion force (η)
 
 
