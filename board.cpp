@@ -45,6 +45,7 @@ void handleResetSignal(int signal) {
 int calcScore(int targets ,double time,float distance){
     float targetsRatio = static_cast<float>(target_number-targets)/target_number;
     // std::cout << "distance " << distance << " time " << time << std::endl;
+    
     return w1*targetsRatio-w2*time - w3*distance ;
 }
 
@@ -299,7 +300,7 @@ int main()
             reset = false;
         }
         worldState.score = calcScore(targetsNumber,time,distance); 
-            
+        printf("Score: %d\n", worldState.score);
     }
     close(windowfd);
     close(dynamics_to_board_fd_read);

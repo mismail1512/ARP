@@ -86,7 +86,8 @@ std::ofstream pidFile("/tmp/window_process.pid");
         vis.draw(win, drone_pos, tars, obs);
         // Display the score below the border
         wattron(win, COLOR_PAIR(1)); // Enable yellow color
-        mvwprintw(win, worldState.getBorder().startY , 1, "Score: %d", worldState.score);
+        
+        mvwprintw(win, worldState.getBorder().startY , 1, "Score: %d ", worldState.score);
         wattroff(win, COLOR_PAIR(1)); // Disable yellow color
         vis.refresh(win);
 
