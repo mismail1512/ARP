@@ -1,5 +1,12 @@
 #!/bin/bash
-
+# Ensure the log folder exists
+LOG_FOLDER="./log"
+if [ ! -d "$LOG_FOLDER" ]; then
+    echo "Log folder not found. Creating it..."
+    mkdir -p "$LOG_FOLDER"
+else
+    echo "Log folder already exists."
+fi
 # Display the initial message
 echo "Make sure the config.h variables TARGETS_TOPIC_NAME, OBSTACLES_TOPIC_NAME, START_X, START_Y, WIDTH, HEIGHT, DRONE_POS_X, DRONE_POS_Y, target_number, obstacles_number are the same on both sides."
 
