@@ -183,11 +183,10 @@ int main()
     tempWorldState = worldState;
     int targetsNumber=0;
     readTargets(targetsSub,worldState.targets_positions);
+    int currentTargetIdx = 0;
     while(true){
         
         signal(SIGUSR2, handleResetSignal);
-        int currentTargetIdx = 0;
-        
         while (shouldPause.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         }
