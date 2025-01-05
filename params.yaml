@@ -13,28 +13,3 @@ drone:
 # Simulation configuration
 simulation:
   time_step: 0.1               # Time step for Euler's integration (seconds)
-
-
-# Obstacle generation parameters
-#obstacles:
- # max_obstacles: 10             # Maximum number of obstacles
-  #obstacle_lifetime: 10.0       # Lifetime of obstacles before disappearing (seconds)
-  #spawn_rate: 1.0               # Rate of obstacle spawning (obstacles/second)
-
-# Target generation parameters
-#targets:
-#  max_targets: 5                # Maximum number of targets
-#  target_lifetime: 10.0         # Lifetime of targets before disappearing (seconds)
-#  attraction_factor: 1.0        # Strength of the attractive force for targets
-
-
-# Watchdog configuration
-#watchdog:
-#  process_timeout: 5  # seconds
-#  watchdog_timeout: 10  # seconds
-
-# logging
-#logging:
-#  enable: true
-#  log_file: "targets_gen.log"
-#  verbosity: "info"  # Possible values: "info", "warning", "error"
