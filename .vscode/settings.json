@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.sdf": "xml",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -73,6 +74,9 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp",
+        "shared_mutex": "cpp"
     }
 }

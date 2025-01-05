@@ -49,11 +49,15 @@ int calcScore(int targets ,double time,float distance){
 }
 
 void readTargets(DDSSubscriber<Targets,TargetsPubSubType>* targetsSub,Point targetsToSend[target_number]){
-    Targets targets = targetsSub->get_valid_data();
-
+    Targets* targets = targetsSub->get_valid_data();
+    if(targets==nullptr)
+        return;
+    std::cout << "readTargets" << std::endl;
     for(int i=0;i<target_number;i++){
-        targetsToSend[i] = Point{static_cast<double>(targets.targets_x()[i]) ,static_cast<double>(targets.targets_y()[i])};
+        targetsToSend[i] = Point{static_cast<double>(targets->targets_x()[i]) ,static_cast<double>(targets->targets_y()[i])};
+        std::cout << targetsToSend[i] << std::endl;
     }
+    std::cout << "targets read" << std::endl;
 
 }
 int main()
@@ -94,6 +98,7 @@ int main()
     obstaclesSub->init(OBSTACLES_TOPIC_NAME);
     obstaclesSub->waitPub();
 
+    std::cout << "pubs available" << std::endl;
 
 
     int fd1[2];
@@ -177,12 +182,13 @@ int main()
     bool wroteToDynamics = false;
     tempWorldState = worldState;
     int targetsNumber=0;
+    readTargets(targetsSub,worldState.targets_positions);
     while(true){
         
-    signal(SIGUSR2, handleResetSignal);
-    int currentTargetIdx = 0;
-    readTargets(targetsSub,worldState.targets_positions);
-    while (shouldPause.load()) {
+        signal(SIGUSR2, handleResetSignal);
+        int currentTargetIdx = 0;
+        
+        while (shouldPause.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         }
 
@@ -230,9 +236,10 @@ int main()
         // Check if the drone is on the current target
         if (drone_position == worldState.targets_positions[currentTargetIdx]) {
             // Remove the target
-            worldState.targets_positions[i] = {NAN, NAN};
+            worldState.targets_positions[currentTargetIdx] = {NAN, NAN};
             currentTargetIdx++;
         }
+        std::cout << "currentTargetIdx " << currentTargetIdx<< std::endl;
         // return it back to original
         drone_position =   worldState.getDronePos();  
 

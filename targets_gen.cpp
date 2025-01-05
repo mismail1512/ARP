@@ -34,7 +34,9 @@ void handleResumeSignal(int signal) {
 }
 
 void pubTarget(DDSPublisher<Targets,TargetsPubSubType>* mypub,Point targetsToSend[target_number]){
+    std::cout << "starting to publish target" << std::endl;
     Targets msg;
+    std::cout << "publsihing target" << std::endl;
     std::vector<int32_t> targets_x{};
     std::vector<int32_t> targets_y{};
     for(int i=0;i<target_number;i++){
@@ -45,6 +47,7 @@ void pubTarget(DDSPublisher<Targets,TargetsPubSubType>* mypub,Point targetsToSen
     msg.targets_x(targets_x);
     msg.targets_y(targets_y);
     mypub->publish(msg);
+    std::cout << "publsihed target" << std::endl;
 }
 
 int main(int argc, char *argv[] ) {
@@ -66,8 +69,7 @@ int main(int argc, char *argv[] ) {
     DDSPublisher<Targets,TargetsPubSubType>* mypub = new DDSPublisher<Targets,TargetsPubSubType>();
     mypub->init(TARGETS_TOPIC_NAME);
     mypub->waitSub();
-
-    Point drone_position;
+    Point drone_position{DRONE_POS_X,DRONE_POS_Y};
     // Reading the first world state and initializing the objects generator
     WindowBorders borders{START_X,START_Y,WIDTH,HEIGHT};    
     ObjectsGenerator targets_obj_gen{borders.startX, borders.startX + borders.width - 1, borders.startY, borders.startY + borders.height - 1, target_number};
@@ -75,8 +77,8 @@ int main(int argc, char *argv[] ) {
     Point targetsToSend[target_number];
     std::vector<Point> targets{};
     // Generating targets
-    targets = targets_obj_gen.genrateObjects(std::vector<Point>{Point{DRONE_POS_X,DRONE_POS_Y}});
-
+    targets = targets_obj_gen.genrateObjects(std::vector<Point>{drone_position});
+    std::cout << "targets generated" << std::endl;
     int i = 0;
     for (const Point& point : targets) {
         targetsToSend[i] = point;

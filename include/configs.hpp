@@ -17,10 +17,10 @@
 
 constexpr int START_X = 0;
 constexpr int START_Y = 0;
-constexpr int WIDTH = 0;
-constexpr int HEIGHT = 0;
-constexpr int DRONE_POS_X = 5;
-constexpr int DRONE_POS_Y = 5;
+constexpr int WIDTH = 10;
+constexpr int HEIGHT = 10;
+constexpr double DRONE_POS_X = 5.0;
+constexpr double DRONE_POS_Y = 5.0;
 
 
 constexpr int target_number = 3;

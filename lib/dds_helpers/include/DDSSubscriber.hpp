@@ -51,6 +51,7 @@ private:
 
         ~SubListener() override
         {
+            delete valid_msg;
         }
 
         void on_subscription_matched(
@@ -90,19 +91,20 @@ private:
                 {
                     samples_++;
                     std::cout << "A new sample received" << std::endl;
-                    valid_msg = my_message_;
+                    valid_msg = &my_message_;
                 }
             }
         }
 
 
-        MyMessage get_valid_data(){
+        MyMessage* get_valid_data(){
+            
             return valid_msg;
         }
 
     public:
         MyMessage my_message_;
-        MyMessage valid_msg;
+        MyMessage *valid_msg=nullptr;
 
         std::atomic_int samples_;
 
@@ -207,7 +209,7 @@ public:
 
     
 
-    MyMessage get_valid_data(){
+    MyMessage* get_valid_data(){
         return listener_.get_valid_data();
     }
 

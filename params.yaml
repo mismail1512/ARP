@@ -6,7 +6,7 @@ drone:
   max_velocity: 20.0            # Maximum velocity (m/s)
   force_step: 1.0               # Force increment per key press (N)
   repulsion_distance: 3.0       # Distance within which obstacles repel the drone (m)
-  repulsion_factor: 0.5         # Strength of the repulsion force (η)
+  repulsion_factor: 0.1         # Strength of the repulsion force (η)
 
 
 
