@@ -77,6 +77,7 @@ std::ofstream pidFile("/tmp/targ.pid");
         write(targets_to_board_fd, &targetsToSend, sizeof(targetsToSend));
 
         while (shouldPause.load()) {
+
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         }
 

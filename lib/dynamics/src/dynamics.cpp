@@ -10,17 +10,56 @@ Dynamics::Dynamics()
 }
 
 
-/*Dynamics::Dynamics(const std::map<std::string, float>& params) {
-    // Use the values from the ParamsManager
-    max_v = params.at("max_velocity");
-    max_a = params.at("max_acceleration");
-    F = params.at("force_step");
-    T = params.at("time_step");
-    K = params.at("viscous_coefficient");
-    M = params.at("mass");
-    p = params.at("repulsion_distance");
-    n = params.at("repulsion_factor");
-}*/
+Dynamics::Dynamics(const std::map<std::string, float>& params) {
+    try {
+        // Use the values from the params map
+        max_v = params.at("max_velocity");
+        max_a = params.at("max_acceleration");
+        F = params.at("force_step");
+        T = params.at("time_step");
+        K = params.at("viscous_coefficient");
+        M = params.at("mass");
+        p = params.at("repulsion_distance");
+        n = params.at("repulsion_factor");
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Error: Missing parameter in config map: " << e.what() << std::endl;
+    }
+}
+
+void Dynamics::refresh() {
+
+    std::map<std::string, float> params = params_manager1.getConfigAsMap();
+
+    try {
+        std::cout <<"refresh"<<std::endl;
+        // Use the values from the params map
+    if (params.find("max_velocity") != params.end() && params.at("max_velocity") != 0.0f) {
+        max_v = params.at("max_velocity"); }
+
+    if (params.find("max_acceleration") != params.end() && params.at("max_acceleration") != 0.0f) {
+        max_a = params.at("max_acceleration");}
+
+    if (params.find("force_step") != params.end() && params.at("force_step") != 0.0f) {
+        F = params.at("force_step");}
+       
+    if (params.find("time_step") != params.end() && params.at("time_step") != 0.0f) {       
+        T = params.at("time_step");}
+
+    if (params.find("viscous_coefficient") != params.end() && params.at("viscous_coefficient") != 0.0f) {
+        K = params.at("viscous_coefficient");}
+        
+    if (params.find("mass") != params.end() && params.at("mass") != 0.0f) {        
+        M = params.at("mass");}
+        
+    if (params.find("repulsion_distance") != params.end() && params.at("repulsion_distance") != 0.0f) {        
+        p = params.at("repulsion_distance");}
+        
+    if (params.find("repulsion_factor") != params.end() && params.at("repulsion_factor") != 0.0f) {        
+        n = params.at("repulsion_factor");}
+    } catch (const std::out_of_range& e) {
+        std::cerr << "Error: Missing parameter in config map: " << e.what() << std::endl;
+    }
+}
 
 Point Dynamics::calcInertialForce(const Point positions[3])
 {

@@ -46,13 +46,16 @@ std::time_t get_last_heartbeat(const std::string& logfile, pid_t& pid) {
         return 0; // No valid timestamp
     }
 
+
     std::string line;
     std::time_t last_heartbeat = 0;
 
     while (std::getline(log_file, line)) {
+
         if (line.find("HEARTBEAT") != std::string::npos) {
             std::time_t timestamp;
             if (std::sscanf(line.c_str(), "HEARTBEAT | PID: %d | Timestamp: %ld", &pid, &timestamp) == 2) {
+
                 last_heartbeat = timestamp;
             }
         }
@@ -66,11 +69,11 @@ std::time_t get_last_heartbeat(const std::string& logfile, pid_t& pid) {
 bool monitor_logs(const std::string& log_directory, int timeout_seconds) {
     std::time_t current_time = std::time(nullptr);
 
+
     for (const auto& entry : fs::directory_iterator(log_directory)) {
         
         if (entry.is_regular_file()) {
             const std::string logfile = entry.path().string();
-            std:: cout<< logfile<<std::endl;
             pid_t pid = 0;
             std::time_t last_heartbeat = get_last_heartbeat(logfile, pid);
 

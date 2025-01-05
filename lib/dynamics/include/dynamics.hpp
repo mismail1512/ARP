@@ -3,14 +3,14 @@
 #include <commands.hpp>
 #include <vector>
 #include <map>
-
+#include<params_manager.hpp>
 
 
 
 
 class Dynamics
 {
-    private:
+    public:
        double max_v = 500000;
         double max_a = 1000000;
         double F = 1.0;
@@ -25,10 +25,11 @@ class Dynamics
         Point calcRepulsionForce(const Point& position,const std::vector<Point>& obstacle_pos);
         Point calcCommandForce(const Command& command);
 
-    public:
+    //public:
+        params_manager params_manager1 ;
         Dynamics();
-        Dynamics(const std::map<std::string, float>& params);  // Constructor
-
+        Dynamics(const std::map<std::string, float>& params);
+        void refresh();
         Point calcForce(const Point positions[3],const std::vector<Point>& obstacles_pos,const Command& command);
         Point calcForce(const Point positions[3],const std::vector<Point>& obstacles_pos);
         Point updatePos(const Point positions[3],const Point& force);

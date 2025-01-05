@@ -21,18 +21,28 @@ Point x;
 
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
+bool reset= false;
 
-int reset= false;
-
-void handleresetSignal(int signal) {
-    if (signal == SIGUSR1) { 
-
-        reset= true;
+void handlePauseResumeSignal(int signal) {
+    if (signal == SIGUSR1) { // 'p'
+        // Toggle the pause state
+        bool current = shouldPause.load();
+        shouldPause.store(!current); // Flip the state
     }
 }
 
+
+void handleResetSignal(int signal) {
+    if (signal == SIGUSR2) { // 'st'
+        std::cout << " reset =true;.." << std::endl;
+      reset =true;
+    }
+}
+
+
 int calcScore(int targets ,double time,float distance){
     float targetsRatio = static_cast<float>(target_number-targets)/target_number;
+    std::cout << "distance " << distance << " time " << time << std::endl;
     return w1*targetsRatio-w2*time - w3*distance ;
 }
 int main()
@@ -47,8 +57,11 @@ int main()
     pidFile << pid;
     pidFile.close();
 
-    // Register the signal handlers
-    signal(SIGUSR1, handleresetSignal);
+   // Register the signal handlers
+    signal(SIGUSR1, handlePauseResumeSignal);
+    signal(SIGUSR2, handleResetSignal);
+    
+
     //signal(SIGUSR2, handleResumeSignal);
 
     fd_set r_fds, w_fds;
@@ -156,6 +169,11 @@ int main()
     int targetsNumber=0;
     while(true){
         
+    signal(SIGUSR2, handleResetSignal);
+    while (shouldPause.load()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
+        }
+
         // Log heartbeat to indicate that the process is still active
         log.logHeartbeat();  // Log heartbeat at each iteration to ensure the watchdog monitors this process
        // while (shouldPause.load()) {
@@ -187,30 +205,7 @@ int main()
         else
             worldState.cmd = Command::UNKNOWN;
 
-        if (reset==true) 
-            {
-                drone_position = {1.0, 1.0};
-                worldState.drone_position = drone_position;
-                // Notify dynamics about the reset
-                write(board_to_dynamics_fd_write, &worldState, sizeof(worldState));
-
-                // Reinitialize obstacles and targets
-                write(board_to_targets_fd, &worldState, sizeof(worldState));  // Notify targets generator
-
-                read(targets_to_board_fd, &worldState.targets_positions, sizeof(worldState.targets_positions));
-
-
-                write(board_to_obstacles_fd, &worldState, sizeof(worldState));  // Notify obstacles generator
-
-                read(obstacles_to_board_pipe_fd, &worldState.obstacles_positions, sizeof(worldState.obstacles_positions));
-
-                // Update all_obstacles to reflect the new world state
-                all_obstacles.clear();
-                all_obstacles.insert(all_obstacles.end(), std::begin(worldState.obstacles_positions), std::end(worldState.obstacles_positions));
-                all_obstacles.insert(all_obstacles.end(), geo_fence_obstacles.begin(), geo_fence_obstacles.end());
-                reset= false;
-
-            }
+       
 
         
             
@@ -218,14 +213,14 @@ int main()
             read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
         if(FD_ISSET(targets_to_board_fd,&r_fds))
             read(targets_to_board_fd,&worldState.targets_positions,sizeof(worldState.targets_positions));
-
+            
 
         if (FD_ISSET(board_to_dynamics_fd_write,&w_fds))
         {
             write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
             wroteToDynamics = true;
         }
-
+             
 
         if(FD_ISSET(dynamics_to_board_fd_read,&r_fds) && wroteToDynamics)
         {
@@ -236,7 +231,7 @@ int main()
 
         worldState.drone_position = drone_position;
 
-            
+         
     
         // update all obstacles
         i =0;
@@ -268,9 +263,22 @@ int main()
             }
                 
         }
+       if (reset) 
+        {
+            drone_position = {5.0, 5.0};
+            worldState.drone_position = drone_position;
+            worldState.score = 0;
+            time =0;
+            distance=0;
             
+
+            // Reinitialize WorldState
+            worldState.drone_position = drone_position;
+            tempWorldState.drone_position = drone_position;
+            reset = false;
+        }
         worldState.score = calcScore(targetsNumber,time,distance); 
-        
+            
     }
     close(windowfd);
     close(board_to_obstacles_fd);
