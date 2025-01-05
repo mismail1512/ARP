@@ -8,13 +8,20 @@
 #define windowPipe "/tmp/window"
 #define obstacles_to_board_pipe  "/tmp/obstacles_to_board"
 #define board_to_obstacles_pipe  "/tmp/board_to_obstacles"
-#define targets_to_board_pipe  "/tmp/targets_to_board"
-#define board_to_targets_pipe  "/tmp/board_to_targets"
 #define dynamics_to_board_pipe "/tmp/dynamics_to_board"
 #define board_to_dynamics_pipe "/tmp/board_to_dynamics"
 #define input_to_board_pipe "/tmp/input_to_board"
 
 #define UPDATE_TIME 10000
+
+
+constexpr int START_X = 0;
+constexpr int START_Y = 0;
+constexpr int WIDTH = 0;
+constexpr int HEIGHT = 0;
+constexpr int DRONE_POS_X = 5;
+constexpr int DRONE_POS_Y = 5;
+
 
 constexpr int target_number = 3;
 constexpr int obstacles_number = 3;

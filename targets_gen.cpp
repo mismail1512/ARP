@@ -33,6 +33,20 @@ void handleResumeSignal(int signal) {
     }
 }
 
+void pubTarget(DDSPublisher<Targets,TargetsPubSubType>* mypub,Point targetsToSend[target_number]){
+    Targets msg;
+    std::vector<int32_t> targets_x{};
+    std::vector<int32_t> targets_y{};
+    for(int i=0;i<target_number;i++){
+        targets_x.push_back(targetsToSend[i].x);
+        targets_y.push_back(targetsToSend[i].y);
+    }
+    msg.targets_number(target_number);
+    msg.targets_x(targets_x);
+    msg.targets_y(targets_y);
+    mypub->publish(msg);
+}
+
 int main(int argc, char *argv[] ) {
    pid_t pid = getpid(); // Get the current process ID
     logger log("./logs/targets_gen.log", pid); // Initialize logger for this process with a unique log file
@@ -47,27 +61,21 @@ int main(int argc, char *argv[] ) {
 
     // Initialization
     // Making pipes
-    mkfifo(targets_to_board_pipe, 0666);
-    int targets_to_board_fd = open(targets_to_board_pipe, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-
-    mkfifo(board_to_targets_pipe, 0666);
-    int board_to_targets_fd = open(board_to_targets_pipe, O_RDONLY | O_CREAT | O_TRUNC, 0666);
+    
 
     DDSPublisher<Targets,TargetsPubSubType>* mypub = new DDSPublisher<Targets,TargetsPubSubType>();
     mypub->init(TARGETS_TOPIC_NAME);
     mypub->waitSub();
+
     Point drone_position;
     // Reading the first world state and initializing the objects generator
-    WorldState<obstacles_number, target_number> worldState{drone_position};
-    read(board_to_targets_fd, &worldState, sizeof(worldState));
-
-    WindowBorders borders{worldState.getBorder()};
+    WindowBorders borders{START_X,START_Y,WIDTH,HEIGHT};    
     ObjectsGenerator targets_obj_gen{borders.startX, borders.startX + borders.width - 1, borders.startY, borders.startY + borders.height - 1, target_number};
 
     Point targetsToSend[target_number];
     std::vector<Point> targets{};
     // Generating targets
-    targets = targets_obj_gen.genrateObjects(std::vector<Point>{worldState.getDronePos()});
+    targets = targets_obj_gen.genrateObjects(std::vector<Point>{Point{DRONE_POS_X,DRONE_POS_Y}});
 
     int i = 0;
     for (const Point& point : targets) {
@@ -78,8 +86,8 @@ int main(int argc, char *argv[] ) {
 
     while (true) {
         // Sending targets
-        write(targets_to_board_fd, &targetsToSend, sizeof(targetsToSend));
-
+        // write(targets_to_board_fd, &targetsToSend, sizeof(targetsToSend));
+        pubTarget(mypub,targetsToSend);
         while (shouldPause.load()) {
 
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
@@ -91,20 +99,19 @@ int main(int argc, char *argv[] ) {
         usleep(UPDATE_TIME);
         
         // Read current world state
-        read(board_to_targets_fd, &worldState, sizeof(worldState));
+        // read(board_to_targets_fd, &worldState, sizeof(worldState));
 
-        drone_position.x = round(worldState.getDronePos().x);
-        drone_position.y = round(worldState.getDronePos().y);
+        // drone_position.x = round(worldState.getDronePos().x);
+        // drone_position.y = round(worldState.getDronePos().y);
 
-        // Check if the drone is on the current target
-        if (drone_position == targetsToSend[i]) {
-            // Remove the target
-            targetsToSend[i] = {NAN, NAN};
-            i++;
-        }
+        // // Check if the drone is on the current target
+        // if (drone_position == targetsToSend[i]) {
+        //     // Remove the target
+        //     targetsToSend[i] = {NAN, NAN};
+        //     i++;
+        // }
     }
 
-    close(targets_to_board_fd);
-    close(board_to_targets_fd);
+    delete mypub;
     return 0;
 }
