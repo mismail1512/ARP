@@ -14,7 +14,8 @@
 #include <atomic>
 #include <chrono>
 #include <thread>
-
+#include "DDSSubscriber.hpp"
+#include "DDSPublisher.hpp"
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[] ) {
    pid_t pid = getpid(); // Get the current process ID
     logger log("./logs/targets_gen.log", pid); // Initialize logger for this process with a unique log file
 
-std::ofstream pidFile("/tmp/targ.pid");
+    std::ofstream pidFile("/tmp/targ.pid");
     pidFile << pid;
     pidFile.close();
 
@@ -52,6 +53,9 @@ std::ofstream pidFile("/tmp/targ.pid");
     mkfifo(board_to_targets_pipe, 0666);
     int board_to_targets_fd = open(board_to_targets_pipe, O_RDONLY | O_CREAT | O_TRUNC, 0666);
 
+    DDSPublisher<Targets,TargetsPubSubType>* mypub = new DDSPublisher<Targets,TargetsPubSubType>();
+    mypub->init(TARGETS_TOPIC_NAME);
+    mypub->waitSub();
     Point drone_position;
     // Reading the first world state and initializing the objects generator
     WorldState<obstacles_number, target_number> worldState{drone_position};

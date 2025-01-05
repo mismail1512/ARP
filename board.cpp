@@ -17,6 +17,8 @@
 #include <chrono>
 #include <thread>
 #include <fstream>
+#include "DDSSubscriber.hpp"
+#include "DDSPublisher.hpp"
 Point x;
 
 // Atomic flag to indicate if the process should pause
@@ -80,6 +82,13 @@ int main()
     mkfifo(board_to_targets_pipe, 0666);
     int board_to_targets_fd = open(board_to_targets_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
 
+    DDSSubscriber<Targets,TargetsPubSubType>* targetsSub = new DDSSubscriber<Targets,TargetsPubSubType>();
+    targetsSub->init(TARGETS_TOPIC_NAME);
+    targetsSub->waitPub();
+
+    DDSSubscriber<Obstacles,ObstaclesPubSubType>* obstaclesSub = new DDSSubscriber<Obstacles,ObstaclesPubSubType>();
+    obstaclesSub->init(OBSTACLES_TOPIC_NAME);
+    obstaclesSub->waitPub();
 
 
 

@@ -1,6 +1,10 @@
 #include <vector>
 #include <fcntl.h>
 
+#define TARGETS_TOPIC_NAME "Targets"
+#define OBSTACLES_TOPIC_NAME "Obstacles"
+
+
 #define windowPipe "/tmp/window"
 #define obstacles_to_board_pipe  "/tmp/obstacles_to_board"
 #define board_to_obstacles_pipe  "/tmp/board_to_obstacles"

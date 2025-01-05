@@ -22,6 +22,15 @@ project(
 # Other common choices are STATIC, SHARED, and MODULE
 # Including header files here helps IDEs but is not required.
 # Output libname matches target name, with the usual extensions on your system
+
+# Find requirements
+if(NOT fastcdr_FOUND)
+    find_package(fastcdr 2 REQUIRED)
+endif()
+
+if(NOT fastdds_FOUND)
+    find_package(fastdds 3 REQUIRED)
+endif()
 add_subdirectory(lib)
 
 
@@ -40,19 +49,18 @@ add_executable(Master_Process Master_Process.cpp)
 
 
 # target_link_libraries(example PRIVATE data_formats objects_generator visualizer dynamics ncurses)
-target_link_libraries(board PRIVATE data_formats objects_generator visualizer dynamics ncurses logger)
 target_link_libraries(window PRIVATE data_formats visualizer ncurses logger)
-
-target_link_libraries(obstacles_gen PRIVATE data_formats objects_generator logger)
-target_link_libraries(targets_gen PRIVATE data_formats objects_generator logger)
+target_link_libraries(board PRIVATE data_formats objects_generator visualizer dynamics ncurses logger DDSPublisher DDSSubscriber)
+target_link_libraries(obstacles_gen PRIVATE data_formats objects_generator logger DDSPublisher DDSSubscriber)
+target_link_libraries(targets_gen PRIVATE data_formats objects_generator logger DDSPublisher DDSSubscriber) 
 target_link_libraries(dynamics_server PRIVATE params_manager data_formats objects_generator dynamics logger)
 target_link_libraries(input PRIVATE data_formats logger)
 target_link_libraries(watchdog PRIVATE data_formats logger)
 target_link_libraries(Master_Process PRIVATE data_formats objects_generator visualizer dynamics ncurses logger)
 
 
-target_include_directories(board PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(window PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(board PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(obstacles_gen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(targets_gen PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(dynamics_server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
