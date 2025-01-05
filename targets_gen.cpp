@@ -34,9 +34,7 @@ void handleResumeSignal(int signal) {
 }
 
 void pubTarget(DDSPublisher<Targets,TargetsPubSubType>* mypub,Point targetsToSend[target_number]){
-    std::cout << "starting to publish target" << std::endl;
     Targets msg;
-    std::cout << "publsihing target" << std::endl;
     std::vector<int32_t> targets_x{};
     std::vector<int32_t> targets_y{};
     for(int i=0;i<target_number;i++){
@@ -47,7 +45,6 @@ void pubTarget(DDSPublisher<Targets,TargetsPubSubType>* mypub,Point targetsToSen
     msg.targets_x(targets_x);
     msg.targets_y(targets_y);
     mypub->publish(msg);
-    std::cout << "publsihed target" << std::endl;
 }
 
 int main(int argc, char *argv[] ) {

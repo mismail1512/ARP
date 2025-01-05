@@ -44,7 +44,7 @@ void handleResetSignal(int signal) {
 
 int calcScore(int targets ,double time,float distance){
     float targetsRatio = static_cast<float>(target_number-targets)/target_number;
-    std::cout << "distance " << distance << " time " << time << std::endl;
+    // std::cout << "distance " << distance << " time " << time << std::endl;
     return w1*targetsRatio-w2*time - w3*distance ;
 }
 
@@ -52,12 +52,18 @@ void readTargets(DDSSubscriber<Targets,TargetsPubSubType>* targetsSub,Point targ
     Targets* targets = targetsSub->get_valid_data();
     if(targets==nullptr)
         return;
-    std::cout << "readTargets" << std::endl;
     for(int i=0;i<target_number;i++){
         targetsToSend[i] = Point{static_cast<double>(targets->targets_x()[i]) ,static_cast<double>(targets->targets_y()[i])};
         std::cout << targetsToSend[i] << std::endl;
     }
-    std::cout << "targets read" << std::endl;
+}
+void readObstacles(DDSSubscriber<Obstacles,ObstaclesPubSubType>* obstaclesSub,Point obstaclesToSend[obstacles_number]){
+    Obstacles* obstacles = obstaclesSub->get_valid_data();
+    if(obstacles==nullptr)
+        return;
+    for(int i=0;i<obstacles_number;i++){
+        obstaclesToSend[i] = Point{static_cast<double>(obstacles->obstacles_x()[i]) ,static_cast<double>(obstacles->obstacles_y()[i])};
+    }
 
 }
 int main()
@@ -83,11 +89,7 @@ int main()
     mkfifo(windowPipe, 0666);
     int windowfd = open(windowPipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
 
-    mkfifo(obstacles_to_board_pipe, 0666);
-    int obstacles_to_board_pipe_fd = open(obstacles_to_board_pipe, O_RDONLY|O_CREAT|O_TRUNC,0666);
-
-    mkfifo(board_to_obstacles_pipe, 0666);
-    int board_to_obstacles_fd = open(board_to_obstacles_pipe, O_WRONLY|O_CREAT|O_TRUNC,0666);
+   
 
 
     DDSSubscriber<Targets,TargetsPubSubType>* targetsSub = new DDSSubscriber<Targets,TargetsPubSubType>();
@@ -164,11 +166,8 @@ int main()
 
     
     
-    // tell obstacles geenrator about the world
-    write(board_to_obstacles_fd,&worldState,sizeof(worldState));
-    // generate obstacles
-    read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
-
+    
+    readObstacles(obstaclesSub,worldState.obstacles_positions);
     write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
     
     ObjectsGenerator obstacles_obj_gen{borders.startX,borders.startX+borders.width-1,borders.startY,borders.startY+borders.height-1,obstacles_number};
@@ -197,8 +196,8 @@ int main()
          //   std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         //}
         
-        selectPipes(r_fds,w_fds,std::vector<int>{obstacles_to_board_pipe_fd,dynamics_to_board_fd_read,input_to_board_pipe_fd}
-        ,std::vector<int>{windowfd,board_to_obstacles_fd,board_to_dynamics_fd_write});
+        selectPipes(r_fds,w_fds,std::vector<int>{dynamics_to_board_fd_read,input_to_board_pipe_fd}
+        ,std::vector<int>{windowfd,board_to_dynamics_fd_write});
 
         // update all the processes with current state
         if(FD_ISSET(windowfd,&w_fds))
@@ -208,8 +207,7 @@ int main()
             
         
             
-        if(FD_ISSET(board_to_obstacles_fd,&w_fds))
-            write(board_to_obstacles_fd,&worldState,sizeof(worldState));
+        
        
         tempWorldState = worldState;
         usleep(UPDATE_TIME);
@@ -220,14 +218,10 @@ int main()
             read(input_to_board_pipe_fd,&worldState.cmd,sizeof(worldState.cmd));
         else
             worldState.cmd = Command::UNKNOWN;
-
-       
-
         
             
-        if(FD_ISSET(obstacles_to_board_pipe_fd,&r_fds))
-            read(obstacles_to_board_pipe_fd,&worldState.obstacles_positions,sizeof(worldState.obstacles_positions));
         
+        readObstacles(obstaclesSub,worldState.obstacles_positions);
         
         drone_position.x = round(worldState.getDronePos().x);
         drone_position.y = round(worldState.getDronePos().y);
@@ -238,7 +232,6 @@ int main()
             worldState.targets_positions[currentTargetIdx] = {NAN, NAN};
             currentTargetIdx++;
         }
-        std::cout << "currentTargetIdx " << currentTargetIdx<< std::endl;
         // return it back to original
         drone_position =   worldState.getDronePos();  
 
@@ -309,8 +302,6 @@ int main()
             
     }
     close(windowfd);
-    close(board_to_obstacles_fd);
-    close(obstacles_to_board_pipe_fd);
     close(dynamics_to_board_fd_read);
     close(board_to_dynamics_fd_write);
     delete targetsSub;

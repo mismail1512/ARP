@@ -31,7 +31,7 @@ void Dynamics::refresh() {
     std::map<std::string, float> params = params_manager1.getConfigAsMap();
 
     try {
-        std::cout <<"refresh"<<std::endl;
+        // std::cout <<"refresh"<<std::endl;
         // Use the values from the params map
     if (params.find("max_velocity") != params.end() && params.at("max_velocity") != 0.0f) {
         max_v = params.at("max_velocity"); }

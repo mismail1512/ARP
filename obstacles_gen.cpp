@@ -35,7 +35,19 @@ void handleResumeSignal(int signal) {
     }
 }
 
-
+void pubObstacle(DDSPublisher<Obstacles,ObstaclesPubSubType>* mypub,Point obstaclesToSend[obstacles_number]){
+    Obstacles msg;
+    std::vector<int32_t> obstacles_x{};
+    std::vector<int32_t> obstacles_y{};
+    for(int i=0;i<obstacles_number;i++){
+        obstacles_x.push_back(obstaclesToSend[i].x);
+        obstacles_y.push_back(obstaclesToSend[i].y);
+    }
+    msg.obstacles_number(target_number);
+    msg.obstacles_x(obstacles_x);
+    msg.obstacles_y(obstacles_y);
+    mypub->publish(msg);
+}
 int main(int argc, char *argv[] ) {
     pid_t pid = getpid(); // Get the current process ID
     logger log("./logs/obstacles_gen.log", pid); // Initialize logger for this process with a unique log file
@@ -50,37 +62,27 @@ int main(int argc, char *argv[] ) {
 
     std::random_device rd;  // Non-deterministic random seed
     std::mt19937 gen(rd()); // Mersenne Twister RNG
-    Point drone_position{0,0};
+    Point drone_position{DRONE_POS_X,DRONE_POS_Y};
     // Define a uniform real distribution between 0 and 1
     std::uniform_real_distribution<> dis(0.0, 1.0);
     
     // Initialization
     Point obstaclesToSend[obstacles_number];
-    // Make the pipes
-    mkfifo(obstacles_to_board_pipe, 0666);
-    int obstacles_to_board_pipe_fd = open(obstacles_to_board_pipe, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-
-    mkfifo(board_to_obstacles_pipe, 0666);
-    int board_to_obstacles_fd = open(board_to_obstacles_pipe, O_RDONLY | O_CREAT | O_TRUNC, 0666);
+    
 
     DDSPublisher<Obstacles,ObstaclesPubSubType>* mypub = new DDSPublisher<Obstacles,ObstaclesPubSubType>();
     mypub->init(OBSTACLES_TOPIC_NAME);
     mypub->waitSub();
 
 
-    // Read first world state
-    WorldState <obstacles_number, target_number> worldState{drone_position};
-    read(board_to_obstacles_fd, &worldState, sizeof(worldState));
 
     // Initialize the obstacles generator
-    WindowBorders borders = worldState.getBorder();
+    WindowBorders borders = WindowBorders{START_X,START_Y,WIDTH,HEIGHT};
     ObjectsGenerator obstacles_obj_gen{borders.startX, borders.startX + borders.width - 1, borders.startY, borders.startY + borders.height - 1, obstacles_number};
     
     // Collect except points (drone's position and targets)
-    std::vector<Point> except_points{worldState.getDronePos()};
-    for (const Point& target : worldState.targets_positions) {
-        except_points.push_back(target);
-    }
+    std::vector<Point> except_points{drone_position};
+    
         
     // Generate obstacles
     std::vector<Point> obstacles = obstacles_obj_gen.genrateObjects(except_points);
@@ -99,24 +101,21 @@ int main(int argc, char *argv[] ) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
         }
         // Sending obstacles to the board
-        write(obstacles_to_board_pipe_fd, &obstaclesToSend, sizeof(obstaclesToSend));
-
+        pubObstacle(mypub,obstaclesToSend);
         // Sleep for a while before next update
         usleep(500 * UPDATE_TIME);
 
-        // Read current world state from the board
-        read(board_to_obstacles_fd, &worldState, sizeof(worldState));
 
         // Adjust drone position (round to nearest integer)
-        drone_position.x = round(worldState.getDronePos().x);
-        drone_position.y = round(worldState.getDronePos().y);
+        // drone_position.x = round(worldState.getDronePos().x);
+        // drone_position.y = round(worldState.getDronePos().y);
 
-        // Rebuild the except points list and generate new obstacles
-        except_points.clear();
-        except_points.push_back(drone_position);
-        for (const Point& target : worldState.targets_positions) {
-            except_points.push_back(target);
-        }
+        // // Rebuild the except points list and generate new obstacles
+        // except_points.clear();
+        // except_points.push_back(drone_position);
+        // for (const Point& target : worldState.targets_positions) {
+        //     except_points.push_back(target);
+        // }
 
         obstacles = obstacles_obj_gen.genrateObjects(except_points);
 
@@ -131,7 +130,6 @@ int main(int argc, char *argv[] ) {
     }
 
     // Close pipes
-    close(obstacles_to_board_pipe_fd);
-    close(board_to_obstacles_fd);
+    delete mypub;
     return 0;
 }

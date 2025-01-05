@@ -90,7 +90,7 @@ private:
                 if (info.valid_data)
                 {
                     samples_++;
-                    std::cout << "A new sample received" << std::endl;
+                    // std::cout << "A new sample received" << std::endl;
                     valid_msg = &my_message_;
                 }
             }

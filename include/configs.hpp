@@ -6,8 +6,6 @@
 
 
 #define windowPipe "/tmp/window"
-#define obstacles_to_board_pipe  "/tmp/obstacles_to_board"
-#define board_to_obstacles_pipe  "/tmp/board_to_obstacles"
 #define dynamics_to_board_pipe "/tmp/dynamics_to_board"
 #define board_to_dynamics_pipe "/tmp/board_to_dynamics"
 #define input_to_board_pipe "/tmp/input_to_board"
