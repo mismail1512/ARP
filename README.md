@@ -64,6 +64,42 @@ The system is divided into multiple processes communicating via pipes and shared
 
 
 
+ARP/
+├── board.cpp                # Blackboard Server
+├── obstacles_gen.cpp        # Obstacle Generator
+├── params.yaml              # Simulation Parameters
+├── README.md                # Project Documentation
+├── run.sh                   # Execution Script
+├── targets_gen.cpp          # Target Generator
+├── watchdog.cpp             # Watchdog Process
+├── window.cpp               # Visualizer (ncurses Window)
+├── input.cpp                # Keyboard Manager
+├── build/                   # Build Directory
+│   └── cbuild.sh            # Build Script
+├── CMakeLists.txt           # CMake Configuration
+├── dynamics_server.cpp      # Drone Dynamics
+├── exec.sh                  # Execution Script (Alternative)
+├── exec1.sh                 # Execution Script (Alternative)
+├── include/                 # Header Files
+│   └── configs.hpp          # Global Configurations
+├── lib/                     # Library Modules
+│   ├── data_formats/        # Data Structures
+│   ├── dynamics/            # Drone Dynamics
+│   ├── logger/              # Logging Module
+│   ├── objects_generator/   # Obstacle and Target Generators
+│   ├── params_manager/      # Parameter Management
+│   └── visualizer/          # ncurses Visualizer
+├── logs/                    # Log Files
+│   ├── board.log
+│   ├── dynamics_server.log
+│   ├── obstacles_gen.log
+│   ├── targets_gen.log
+│   └── window.log
+
+
+
+
+
 ## Active Components
 ### Blackboard Server (B):
 
