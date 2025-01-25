@@ -93,7 +93,7 @@ ARP Project/
 
 ├── build/                   # Build Directory
 
-│   └── cbuild.sh            # Build Script
+│     └── cbuild.sh            # Build Script
 
 ├── CMakeLists.txt           # CMake Configuration
 
@@ -105,33 +105,33 @@ ARP Project/
 
 ├── include/                 # Header Files
 
-│   └── configs.hpp          # Global Configurations
+│     └── configs.hpp          # Global Configurations
 
 ├── lib/                     # Library Modules
 
-│   ├── data_formats/        # Data Structures
+│     ├── data_formats/        # Data Structures
 
-│   ├── dynamics/            # Drone Dynamics
+│     ├── dynamics/            # Drone Dynamics
 
-│   ├── logger/              # Logging Module
+│     ├── logger/              # Logging Module
 
-│   ├── objects_generator/   # Obstacle and Target Generators
+│     ├── objects_generator/   # Obstacle and Target Generators
 
-│   ├── params_manager/      # Parameter Management
+│     ├── params_manager/      # Parameter Management
 
-│   └── visualizer/          # ncurses Visualizer
+│     └── visualizer/          # ncurses Visualizer
 
 ├── logs/                    # Log Files
 
-│   ├── board.log
+│     ├── board.log
 
-│   ├── dynamics_server.log
+│     ├── dynamics_server.log
 
-│   ├── obstacles_gen.log
+│     ├── obstacles_gen.log
 
-│   ├── targets_gen.log
+│     ├── targets_gen.log
 
-│   └── window.log
+│     └── window.log
 
 
 
