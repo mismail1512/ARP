@@ -1,1 +1,202 @@
-# ARP
+## Drone Operation Interactive Simulator
+Table of Contents
+Project Overview
+
+Architecture Sketch
+
+Active Components
+
+Directory Structure
+
+Installation and Running Instructions
+
+Operational Instructions
+
+Makefile and Build Process
+
+Logging and Debugging
+
+
+
+# Project Overview
+This project is an interactive drone operation simulator implemented using the ncurses library. The simulator features:
+
+A drone controlled via keyboard inputs.
+
+Targets that appear randomly and must be reached in sequence.
+
+Obstacles that appear randomly and repel the drone.
+
+A watchdog to monitor system health.
+
+A blackboard server to manage the shared state of the world.
+
+Real-time logging and parameter management via a YAML file.
+
+The drone's movement is governed by a 2-degree-of-freedom dynamic model with inertia and viscous resistance. Obstacles and targets exert forces on the drone using the Latombe/Kathib model.
+
+
+
+
+# Architecture Sketch
+The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
+
++-------------------+       +-------------------+       +-------------------+
+|  Keyboard Manager |       |  Obstacle Generator|       |  Target Generator  |
+|       (I)         |       |       (O)          |       |       (T)          |
++-------------------+       +-------------------+       +-------------------+
+        |                           |                           |
+        |                           |                           |
+        v                           v                           v
++-------------------+       +-------------------+       +-------------------+
+|  Blackboard Server|       |  Drone Dynamics   |       |  Watchdog (W)     |
+|       (B)         |       |       (D)         |       |                   |
++-------------------+       +-------------------+       +-------------------+
+        |                           |                           |
+        |                           |                           |
+        v                           v                           v
++-------------------+       +-------------------+       +-------------------+
+|  Visualizer       |       |  Logger           |       |  Params Manager   |
+|  (ncurses Window) |       |                   |       |                   |
++-------------------+       +-------------------+       +-------------------+
+
+
+
+
+
+# Active Components
+Blackboard Server (B):
+
+Manages the shared state of the world (drone position, targets, obstacles).
+
+Uses pipes and shared memory for inter-process communication.
+
+Implements a select() loop to handle multiple clients.
+
+Drone Dynamics (D):
+
+Simulates the drone's movement using a 2-DOF dynamic model.
+
+Solves the motion equation using Euler's method.
+
+Applies forces from keyboard inputs, obstacles, and targets.
+
+Keyboard Manager (I):
+
+Handles user input for controlling the drone.
+
+Maps keyboard keys to forces in 8 directions.
+
+Obstacle Generator (O):
+
+Randomly generates and removes obstacles.
+
+Uses the Latombe/Kathib model to calculate repulsive forces.
+
+Target Generator (T):
+
+Randomly generates targets for the drone to reach.
+
+Removes targets once the drone reaches them.
+
+Watchdog (W):
+
+Monitors the health of all processes.
+
+Logs errors and shuts down the system if a process fails.
+
+Visualizer:
+
+Implements the ncurses window for real-time visualization.
+
+Displays the drone, targets, obstacles, and an inspection window.
+
+Logger:
+
+Logs system events to files in the logs/ directory.
+
+Supports multiple log files for different processes.
+
+Params Manager:
+
+Reads and manages simulation parameters from params.yaml.
+
+Allows real-time updates to parameters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
