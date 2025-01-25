@@ -137,15 +137,15 @@ Calculates the score:
 Based on the number of targets reached, time taken, and distance traveled.
 
 Interactions:
-Dynamics Server: Receives drone position updates and sends the current state.
+- Dynamics Server: Receives drone position updates and sends the current state.
 
-Input Manager: Receives user commands (e.g., movement, pause, reset).
+- Input Manager: Receives user commands (e.g., movement, pause, reset).
 
-Obstacle Generator: Receives obstacle positions and sends the current state.
+- Obstacle Generator: Receives obstacle positions and sends the current state.
+ 
+- Target Generator: Receives target positions and sends the current state.
 
-Target Generator: Receives target positions and sends the current state.
-
-Visualizer: Sends the current state for rendering.
+- Visualizer: Sends the current state for rendering.
 
 
 ### Drone Dynamics (D)
@@ -172,11 +172,12 @@ Calculates the new position and velocity based on the applied forces.
 Sends the updated position to the Blackboard Server.
 
 Interactions:
-Blackboard Server: Receives the current state and sends updated drone positions.
 
-Obstacle Generator: Uses obstacle positions to calculate repulsion forces.
+- Blackboard Server: Receives the current state and sends updated drone positions.
 
-Target Generator: (Optional) Uses target positions to calculate attraction forces.
+- Obstacle Generator: Uses obstacle positions to calculate repulsion forces.
+
+- Target Generator: (Optional) Uses target positions to calculate attraction forces.
 
 
 ###  Input Process (I)
@@ -205,9 +206,10 @@ st: Start/resume the simulation.
 reset: Reset the simulation.
 
 Interactions:
-Blackboard Server: Sends user commands (e.g., movement, pause, reset).
 
-Other Processes: Sends signals to pause, resume, or reset the simulation.
+- Blackboard Server: Sends user commands (e.g., movement, pause, reset).
+
+- Other Processes: Sends signals to pause, resume, or reset the simulation.
 
 
 
@@ -233,7 +235,8 @@ Removes obstacles:
 Randomly removes obstacles after a certain period or when the drone interacts with them.
 
 Interactions:
-Blackboard Server: Receives the current state and sends updated obstacle positions.
+
+- Blackboard Server: Receives the current state and sends updated obstacle positions.
 
 
 ### 5. Target Generator (T)
@@ -256,7 +259,8 @@ Updates target positions:
 Periodically generates new targets and sends their positions to the Blackboard Server.
 
 Interactions:
-Blackboard Server: Receives the current state and sends updated target positions.
+
+- Blackboard Server: Receives the current state and sends updated target positions.
 
 
 
@@ -279,9 +283,10 @@ Terminates the system:
 If a process fails or becomes unresponsive, the Watchdog terminates the entire system to prevent further issues.
 
 Interactions:
-All Processes: Monitors their activity via log files.
 
-System Control: Terminates the system if a process fails.
+- All Processes: Monitors their activity via log files.
+
+- System Control: Terminates the system if a process fails.
 
 
 
@@ -305,7 +310,8 @@ Refreshes the display:
 Continuously updates the window to reflect changes in the simulation state.
 
 Interactions:
-Blackboard Server: Receives the current state for rendering.
+
+- Blackboard Server: Receives the current state for rendering.
 
 
 
@@ -328,9 +334,10 @@ Ensures traceability:
 Logs include timestamps and process IDs for easy debugging and monitoring.
 
 Interactions:
-All Processes: Logs events from each process to their respective log files.
 
-Watchdog: Provides heartbeat messages for monitoring process health.
+- All Processes: Logs events from each process to their respective log files.
+
+- Watchdog: Provides heartbeat messages for monitoring process health.
 
 
 
@@ -352,9 +359,10 @@ Supports real-time updates:
 Allows parameters to be updated dynamically during the simulation without restarting the system.
 
 Interactions:
-All Processes: Provides access to simulation parameters.
 
-Dynamics Server: Uses parameters for calculating forces and updating drone dynamics.
+- All Processes: Provides access to simulation parameters.
+
+- Dynamics Server: Uses parameters for calculating forces and updating drone dynamics.
 
 
 ## Installation and Running Instructions
