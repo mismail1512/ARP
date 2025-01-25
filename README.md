@@ -102,41 +102,43 @@ ARP Project/
 ##  Active Components
 
 ### Blackboard Server (B)
-Purpose:
+**Purpose:**
 The Blackboard Server acts as the central hub for managing the shared state of the simulation. It maintains the positions of the drone, targets, and obstacles, and ensures that all processes are synchronized.
 
-Key Responsibilities:
-Manages the WorldState object, which contains:
+**Key Responsibilities:**  
 
-Drone position.
+- Manages the WorldState object, which contains:
 
-Target positions.
+-Drone position.
 
-Obstacle positions.
+- Target positions.
 
-Simulation borders (geofence).
+- Obstacle positions.
 
-Communicates with other processes via pipes:
+-Simulation borders (geofence).
 
-Receives drone dynamics updates from the Dynamics Server.
+-Communicates with other processes via pipes:
 
-Receives user input from the Input Manager.
+- Receives drone dynamics updates from the Dynamics Server.
 
-Receives obstacle and target updates from the Obstacle Generator and Target Generator.
+- Receives user input from the Input Manager.
 
-Sends the current state to the Visualizer for rendering.
+- Receives obstacle and target updates from the Obstacle Generator and Target Generator.
 
-Handles signals:
+- Sends the current state to the Visualizer for rendering.
 
-- SIGUSR1: Pause/resume the simulation.
+-*Handles signals:*
 
-- SIGUSR2: Reset the simulation.
+SIGUSR1: Pause/resume the simulation.
 
-Calculates the score:
+SIGUSR2: Reset the simulation.
+
+
+-Calculates the score:
 
 Based on the number of targets reached, time taken, and distance traveled.
 
-Interactions:
+**Interactions:**
 - Dynamics Server: Receives drone position updates and sends the current state.
 
 - Input Manager: Receives user commands (e.g., movement, pause, reset).
@@ -149,15 +151,15 @@ Interactions:
 
 
 ### Drone Dynamics (D)
-Purpose:
+**Purpose:**
 The Drone Dynamics module simulates the drone's movement based on the forces applied by user input, obstacles, and targets. It uses a 2-degree-of-freedom (2-DOF) dynamic model to calculate the drone's position and velocity.
 
-Key Responsibilities:
-Implements the dynamic model:
+**Key Responsibilities:**
+-Implements the dynamic model:
 
-Uses Euler's method to numerically solve the motion equations.
+-Uses Euler's method to numerically solve the motion equations.
 
-Applies forces to the drone:
+- Applies forces to the drone:
 
 Command forces: Generated from user input (keyboard commands).
 
@@ -165,13 +167,13 @@ Repulsion forces: Generated from obstacles using the Latombe/Kathib model.
 
 Attraction forces: (Optional) Generated from targets using the same model.
 
-Updates the drone's position:
+- Updates the drone's position:
 
-Calculates the new position and velocity based on the applied forces.
+- Calculates the new position and velocity based on the applied forces.
 
-Sends the updated position to the Blackboard Server.
+- Sends the updated position to the Blackboard Server.
 
-Interactions:
+**Interactions:**
 
 - Blackboard Server: Receives the current state and sends updated drone positions.
 
@@ -181,11 +183,11 @@ Interactions:
 
 
 ###  Input Process (I)
-Purpose:
+**Purpose:**
 The Input Process handles user input for controlling the drone. It translates keyboard inputs into commands that are sent to the Blackboard Server to update the drone's movement.
 
-Key Responsibilities:
-Maps keyboard keys to forces in 8 directions:
+**Key Responsibilities:**
+- Maps keyboard keys to forces in 8 directions:
 
 The following keys are used to control the drone:
 
@@ -195,9 +197,9 @@ s d f
 x c v
 The center key (d) acts as a brake.
 
-Sends commands to the Blackboard Server via a pipe.
+-Sends commands to the Blackboard Server via a pipe.
 
-Handles signals:
+- Handles signals:
 
 p: Pause the simulation.
 
@@ -205,7 +207,7 @@ st: Start/resume the simulation.
 
 reset: Reset the simulation.
 
-Interactions:
+**Interactions:**
 
 - Blackboard Server: Sends user commands (e.g., movement, pause, reset).
 
@@ -216,49 +218,49 @@ Interactions:
 
 ### Obstacle Generator Process (O)
 
-Purpose:
+**Purpose:**
 The Obstacle Generator randomly generates and removes obstacles within the simulation environment. It ensures that obstacles do not overlap with the drone or targets.
 
-Key Responsibilities:
-Generates obstacles:
+**Key Responsibilities:**
+-Generates obstacles:
 
-Randomly places obstacles within the simulation borders.
+-Randomly places obstacles within the simulation borders.
 
-Ensures obstacles do not overlap with the drone or targets.
+-Ensures obstacles do not overlap with the drone or targets.
 
-Updates obstacle positions:
+-Updates obstacle positions:
 
-Periodically updates obstacle positions and sends them to the Blackboard Server.
+-Periodically updates obstacle positions and sends them to the Blackboard Server.
 
-Removes obstacles:
+-Removes obstacles:
 
-Randomly removes obstacles after a certain period or when the drone interacts with them.
+- Randomly removes obstacles after a certain period or when the drone interacts with them.
 
-Interactions:
+**Interactions:**
 
 - Blackboard Server: Receives the current state and sends updated obstacle positions.
 
 
 ### 5. Target Generator (T)
-Purpose:
+**Purpose:**
 The Target Generator randomly generates targets for the drone to reach. It ensures that targets are placed in valid locations and removes them once the drone reaches them.
 
-Key Responsibilities:
-Generates targets:
+**Key Responsibilities:**
+-Generates targets:
 
-Randomly places targets within the simulation borders.
+- Randomly places targets within the simulation borders.
 
-Ensures targets do not overlap with the drone or obstacles.
+- Ensures targets do not overlap with the drone or obstacles.
 
-Removes targets:
+- Removes targets:
 
-Removes a target once the drone reaches it.
+- Removes a target once the drone reaches it.
 
-Updates target positions:
+- Updates target positions:
 
-Periodically generates new targets and sends their positions to the Blackboard Server.
+- Periodically generates new targets and sends their positions to the Blackboard Server.
 
-Interactions:
+**Interactions:**
 
 - Blackboard Server: Receives the current state and sends updated target positions.
 
@@ -266,23 +268,23 @@ Interactions:
 
 
 ### 6. Watchdog (W)
-Purpose:
+**Purpose:**
 The Watchdog monitors the health of all processes in the system. It ensures that all processes are running correctly and terminates the system if any process fails or becomes unresponsive.
 
-Key Responsibilities:
-Monitors log files:
+**Key Responsibilities:**
+- Monitors log files:
 
-Checks for heartbeat messages from each process in the logs/ directory.
+- Checks for heartbeat messages from each process in the logs/ directory.
 
-Detects inactivity:
+-Detects inactivity:
 
 If a process fails to send a heartbeat within a specified timeout, the Watchdog detects it as inactive.
 
-Terminates the system:
+- Terminates the system:
 
 If a process fails or becomes unresponsive, the Watchdog terminates the entire system to prevent further issues.
 
-Interactions:
+**Interactions:** 
 
 - All Processes: Monitors their activity via log files.
 
@@ -291,25 +293,25 @@ Interactions:
 
 
 ### 7. Visualizer
-Purpose:
+**Purpose:**
 The Visualizer implements the ncurses window for real-time visualization of the simulation. It provides a graphical representation of the drone, targets, obstacles, and other relevant information.
 
-Key Responsibilities:
-Displays the simulation:
+**Key Responsibilities:**
+- Displays the simulation:
 
-Renders the drone, targets, and obstacles in a full-screen window.
+- Renders the drone, targets, and obstacles in a full-screen window.
 
-Updates the display in real-time based on the current state received from the Blackboard Server.
+- Updates the display in real-time based on the current state received from the Blackboard Server.
 
-Shows additional information:
+- Shows additional information:
 
-Displays the score, drone position, and other relevant details in an inspection window.
+- Displays the score, drone position, and other relevant details in an inspection window.
 
-Refreshes the display:
+- Refreshes the display:
 
-Continuously updates the window to reflect changes in the simulation state.
+- Continuously updates the window to reflect changes in the simulation state.
 
-Interactions:
+**Interactions:** 
 
 - Blackboard Server: Receives the current state for rendering.
 
@@ -317,21 +319,21 @@ Interactions:
 
 
 ### 8. Logger
-Purpose:
+**Purpose:**
 The Logger is responsible for logging system events to files in the logs/ directory. It ensures that each process has its own log file for debugging and monitoring purposes.
 
-Key Responsibilities:
-Logs system events:
+**Key Responsibilities:**
+- Logs system events:
 
-Writes heartbeat messages, errors, and other events to log files.
+- Writes heartbeat messages, errors, and other events to log files.
 
-Supports multiple log files:
+- Supports multiple log files:
 
-Each process (e.g., Blackboard Server, Dynamics Server, etc.) has its own dedicated log file.
+- Each process (e.g., Blackboard Server, Dynamics Server, etc.) has its own dedicated log file.
 
-Ensures traceability:
+- Ensures traceability
 
-Logs include timestamps and process IDs for easy debugging and monitoring.
+- Logs include timestamps and process IDs for easy debugging and monitoring.
 
 Interactions:
 
@@ -342,23 +344,23 @@ Interactions:
 
 
 ### 9. Params Manager
-Purpose:
+**Purpose:**
 The Params Manager reads and manages simulation parameters from the params.yaml file. It allows for real-time updates to parameters, ensuring flexibility and adaptability during the simulation.
 
-Key Responsibilities:
-Reads parameters:
+**Key Responsibilities:**
+- Reads parameters:
 
-Loads simulation parameters (e.g., drone mass, viscous coefficient, repulsion distance) from the params.yaml file.
+- Loads simulation parameters (e.g., drone mass, viscous coefficient, repulsion distance) from the params.yaml file.
 
-Manages parameters:
+- Manages parameters:
 
-Provides a map of parameters for other modules to use.
+- Provides a map of parameters for other modules to use.
 
-Supports real-time updates:
+- Supports real-time updates:
 
-Allows parameters to be updated dynamically during the simulation without restarting the system.
+- Allows parameters to be updated dynamically during the simulation without restarting the system.
 
-Interactions:
+**Interactions:**
 
 - All Processes: Provides access to simulation parameters.
 
