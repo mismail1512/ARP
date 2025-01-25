@@ -46,8 +46,9 @@ The system is divided into multiple processes communicating via pipes and shared
 
 
 
-```ARP Project/
-```├── board.cpp
+```
+ARP Project/
+├── board.cpp
 ├── obstacles_gen.cpp
 ├── params.yaml
 ├── README.md
@@ -109,6 +110,7 @@ The system is divided into multiple processes communicating via pipes and shared
 │   ├── obstacles_gen.log
 │   ├── targets_gen.log
 │   └── window.log
+```
 
 ##  Active Components
 
