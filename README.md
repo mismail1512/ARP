@@ -1,4 +1,4 @@
-# # Drone Operation Interactive Simulator
+# Drone Operation Interactive Simulator
 Table of Contents
 Project Overview
 
@@ -18,7 +18,7 @@ Logging and Debugging
 
 
 
-# Project Overview
+## Project Overview
 This project is an interactive drone operation simulator implemented using the ncurses library. The simulator features:
 
 A drone controlled via keyboard inputs.
@@ -38,7 +38,7 @@ The drone's movement is governed by a 2-degree-of-freedom dynamic model with ine
 
 
 
-# Architecture Sketch
+## Architecture Sketch
 The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
 
 +-------------------+       +-------------------+       +-------------------+
@@ -64,8 +64,8 @@ The system is divided into multiple processes communicating via pipes and shared
 
 
 
-# Active Components
-Blackboard Server (B):
+## Active Components
+### Blackboard Server (B):
 
 Manages the shared state of the world (drone position, targets, obstacles).
 
@@ -73,7 +73,7 @@ Uses pipes and shared memory for inter-process communication.
 
 Implements a select() loop to handle multiple clients.
 
-Drone Dynamics (D):
+### Drone Dynamics (D):
 
 Simulates the drone's movement using a 2-DOF dynamic model.
 
@@ -81,43 +81,43 @@ Solves the motion equation using Euler's method.
 
 Applies forces from keyboard inputs, obstacles, and targets.
 
-Keyboard Manager (I):
+### Keyboard Manager (I):
 
 Handles user input for controlling the drone.
 
 Maps keyboard keys to forces in 8 directions.
 
-Obstacle Generator (O):
+### Obstacle Generator (O):
 
 Randomly generates and removes obstacles.
 
 Uses the Latombe/Kathib model to calculate repulsive forces.
 
-Target Generator (T):
+### Target Generator (T):
 
 Randomly generates targets for the drone to reach.
 
 Removes targets once the drone reaches them.
 
-Watchdog (W):
+### Watchdog (W):
 
 Monitors the health of all processes.
 
 Logs errors and shuts down the system if a process fails.
 
-Visualizer:
+### Visualizer:
 
 Implements the ncurses window for real-time visualization.
 
 Displays the drone, targets, obstacles, and an inspection window.
 
-Logger:
+### Logger:
 
 Logs system events to files in the logs/ directory.
 
 Supports multiple log files for different processes.
 
-Params Manager:
+### Params Manager:
 
 Reads and manages simulation parameters from params.yaml.
 
