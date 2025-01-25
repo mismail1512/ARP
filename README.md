@@ -66,7 +66,9 @@ The system is divided into multiple processes communicating via pipes and shared
 
 ARP/
 ├── board.cpp                # Blackboard Server
+
 ├── obstacles_gen.cpp        # Obstacle Generator
+
 ├── params.yaml              # Simulation Parameters
 ├── README.md                # Project Documentation
 ├── run.sh                   # Execution Script
