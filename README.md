@@ -109,15 +109,15 @@ The Blackboard Server acts as the central hub for managing the shared state of t
 
 - Manages the WorldState object, which contains:
 
--Drone position.
+- Drone position.
 
 - Target positions.
 
 - Obstacle positions.
 
--Simulation borders (geofence).
+- Simulation borders (geofence).
 
--Communicates with other processes via pipes:
+- Communicates with other processes via pipes:
 
 - Receives drone dynamics updates from the Dynamics Server.
 
@@ -127,14 +127,14 @@ The Blackboard Server acts as the central hub for managing the shared state of t
 
 - Sends the current state to the Visualizer for rendering.
 
--*Handles signals:*
+- *Handles signals:*
 
 SIGUSR1: Pause/resume the simulation.
 
 SIGUSR2: Reset the simulation.
 
 
--Calculates the score:
+- Calculates the score:
 
 Based on the number of targets reached, time taken, and distance traveled.
 
@@ -155,9 +155,9 @@ Based on the number of targets reached, time taken, and distance traveled.
 The Drone Dynamics module simulates the drone's movement based on the forces applied by user input, obstacles, and targets. It uses a 2-degree-of-freedom (2-DOF) dynamic model to calculate the drone's position and velocity.
 
 **Key Responsibilities:**
--Implements the dynamic model:
+- Implements the dynamic model:
 
--Uses Euler's method to numerically solve the motion equations.
+- Uses Euler's method to numerically solve the motion equations.
 
 - Applies forces to the drone:
 
@@ -197,7 +197,7 @@ s d f
 x c v
 The center key (d) acts as a brake.
 
--Sends commands to the Blackboard Server via a pipe.
+- Sends commands to the Blackboard Server via a pipe.
 
 - Handles signals:
 
@@ -222,17 +222,17 @@ reset: Reset the simulation.
 The Obstacle Generator randomly generates and removes obstacles within the simulation environment. It ensures that obstacles do not overlap with the drone or targets.
 
 **Key Responsibilities:**
--Generates obstacles:
+- Generates obstacles:
 
--Randomly places obstacles within the simulation borders.
+- Randomly places obstacles within the simulation borders.
 
--Ensures obstacles do not overlap with the drone or targets.
+- Ensures obstacles do not overlap with the drone or targets.
 
--Updates obstacle positions:
+- Updates obstacle positions:
 
--Periodically updates obstacle positions and sends them to the Blackboard Server.
+- Periodically updates obstacle positions and sends them to the Blackboard Server.
 
--Removes obstacles:
+- Removes obstacles:
 
 - Randomly removes obstacles after a certain period or when the drone interacts with them.
 
@@ -246,7 +246,7 @@ The Obstacle Generator randomly generates and removes obstacles within the simul
 The Target Generator randomly generates targets for the drone to reach. It ensures that targets are placed in valid locations and removes them once the drone reaches them.
 
 **Key Responsibilities:**
--Generates targets:
+- Generates targets:
 
 - Randomly places targets within the simulation borders.
 
