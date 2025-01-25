@@ -4,22 +4,11 @@
 
 Project Overview
 
-Architecture Sketch
+Directory Structure
 
 Active Components
 
-Directory Structure
-
 Installation and Running Instructions
-
-Operational Instructions
-
-Makefile and Build Process
-
-Logging and Debugging
-
-Error Handling and Signals
-
 
 
 
@@ -40,10 +29,8 @@ Real-time logging and parameter management via a YAML file.
 
 The drone's movement is governed by a 2-degree-of-freedom dynamic model with inertia and viscous resistance. Obstacles and targets exert forces on the drone using the Latombe/Kathib model.
 
-Architecture Sketch
+Directory Structure
 The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
-
-
 
 
 ```
@@ -370,3 +357,19 @@ All Processes: Provides access to simulation parameters.
 Dynamics Server: Uses parameters for calculating forces and updating drone dynamics.
 
 
+## Installation and Running Instructions
+
+go to build and make 
+```
+cmake
+
+cd build
+make
+```
+
+to run 
+```
+cd ..
+./exec.sh
+./exec1.sh
+```
