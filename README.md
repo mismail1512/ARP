@@ -43,6 +43,10 @@ The drone's movement is governed by a 2-degree-of-freedom dynamic model with ine
 Architecture Sketch
 The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
 
+AA/
+|---── kkk
+|---── kkk
+
 
 ARP Project/
 ├── board.cpp
