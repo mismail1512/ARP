@@ -141,9 +141,9 @@ Sends the current state to the Visualizer for rendering.
 
 Handles signals:
 
-SIGUSR1: Pause/resume the simulation.
+- SIGUSR1: Pause/resume the simulation.
 
-SIGUSR2: Reset the simulation.
+- SIGUSR2: Reset the simulation.
 
 Calculates the score:
 
