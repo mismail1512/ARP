@@ -42,12 +42,19 @@ The drone's movement is governed by a 2-degree-of-freedom dynamic model with ine
 The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
 
 +-------------------+       +-------------------+       +-------------------+
+
 |  Keyboard Manager |       |  Obstacle Generator|       |  Target Generator  |
+
 |       (I)         |       |       (O)          |       |       (T)          |
+
 +-------------------+       +-------------------+       +-------------------+
+
         |                           |                           |
+        
         |                           |                           |
+        
         v                           v                           v
+        
 +-------------------+       +-------------------+       +-------------------+
 |  Blackboard Server|       |  Drone Dynamics   |       |  Watchdog (W)     |
 |       (B)         |       |       (D)         |       |                   |
