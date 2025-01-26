@@ -179,7 +179,7 @@ Attraction forces: (Optional) Generated from targets using the same model.
 
 - Obstacle Generator: Uses obstacle positions to calculate repulsion forces.
 
-- Target Generator: (Optional) Uses target positions to calculate attraction forces.
+- Target Generator: Uses target positions to calculate attraction forces.
 
 
 ###  Input Process (I)
@@ -195,9 +195,9 @@ The following keys are used to control the drone:
 w e r
 s d f
 x c v
-The center key (d) acts as a brake.
 ```
 
+The center key (d) acts as a brake.
 
 - Sends commands to the Blackboard Server via a pipe.
 
