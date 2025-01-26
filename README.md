@@ -191,11 +191,13 @@ The Input Process handles user input for controlling the drone. It translates ke
 
 The following keys are used to control the drone:
 
-Copy
+```
 w e r
 s d f
 x c v
 The center key (d) acts as a brake.
+```
+
 
 - Sends commands to the Blackboard Server via a pipe.
 
