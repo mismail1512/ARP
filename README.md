@@ -195,6 +195,8 @@ The following keys are used to control the drone:
 w e r
 s d f
 x c v
+
+p to pause\start and reset to reset
 ```
 
 The center key (d) acts as a brake.
