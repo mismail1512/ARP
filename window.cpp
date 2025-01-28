@@ -13,7 +13,6 @@
 #include <thread>
 #include <fstream>
 
-<<<<<<< HEAD
 /**
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
@@ -34,11 +33,6 @@ void handleResumeSignal(int signal) {
 
 int main(int argc, char* argv[]) {
 //std::cout << "Window process running. PID: " << pid << std::endl;
-=======
-
-
-int main(int argc, char* argv[]) {
->>>>>>> 58c11fb (Initial commit for my project)
 pid_t pid = getpid();
 
 std::ofstream pidFile("/tmp/window_process.pid");
@@ -46,17 +40,12 @@ std::ofstream pidFile("/tmp/window_process.pid");
     pidFile.close();
     std::cout << "Window process running. PID: " << pid << std::endl;
 
-<<<<<<< HEAD
 ////////////
     logger log("./logs/window.log", pid); // Initialize logger for this process with a unique log file
 
    // Register the signal handlers
    // signal(SIGUSR1, handlePauseSignal);
     //signal(SIGUSR2, handleResumeSignal);
-=======
-    logger log("./logs/window.log", pid); // Initialize logger for this process with a unique log file
-
->>>>>>> 58c11fb (Initial commit for my project)
 
     mkfifo(windowPipe, 0666);
     int windowfd = open(windowPipe, O_RDONLY | O_CREAT | O_TRUNC, 0666);
@@ -72,13 +61,10 @@ std::ofstream pidFile("/tmp/window_process.pid");
     int i;
 
     while (true) {
-<<<<<<< HEAD
         // Check if we should pause
          //while (shouldPause.load()) {
            // std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
            //}
-=======
->>>>>>> 58c11fb (Initial commit for my project)
 
         // Log heartbeat after sending targets
         log.logHeartbeat();
