@@ -371,7 +371,7 @@ The Params Manager reads and manages simulation parameters from the params.yaml 
 
 ## Installation and Running Instructions
  
-1- After dounloading the repo, create the logs and build directories
+1- After downloading the repo, create the logs and build directories
 
 ```
 mkdir logs
@@ -383,5 +383,5 @@ mkdir buld
 ./build.sh
 ./run.sh
 ```
-
+Note: you have to install Konsole in your device beacusewe use konsole application in the display of window and input process
 
