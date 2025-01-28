@@ -19,6 +19,7 @@
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
 
+<<<<<<< HEAD
 void handlePauseSignal(int signal) {
     if (signal == SIGUSR1) { // 'p'
         //std::cout << "Window process: Received 'p'. Pausing..." << std::endl;
@@ -30,6 +31,13 @@ void handleResumeSignal(int signal) {
     if (signal == SIGUSR2) { // 'st'
         //std::cout << "Window process: Received 'st'. Resuming..." << std::endl;
         shouldPause.store(false);
+=======
+void handlePauseResumeSignal(int signal) {
+    if (signal == SIGUSR1) { // 'p'
+        // Toggle the pause state
+        bool current = shouldPause.load();
+        shouldPause.store(!current); // Flip the state
+>>>>>>> 58c11fb (Initial commit for my project)
     }
 }
 
@@ -42,9 +50,15 @@ std::ofstream pidFile("/tmp/obst.pid");
     pidFile << pid;
     pidFile.close();
 
+<<<<<<< HEAD
     // Register the signal handlers
     signal(SIGUSR1, handlePauseSignal);
     signal(SIGUSR2, handleResumeSignal);
+=======
+    // Register the signal handler
+    signal(SIGUSR1, handlePauseResumeSignal);
+
+>>>>>>> 58c11fb (Initial commit for my project)
 
     std::random_device rd;  // Non-deterministic random seed
     std::mt19937 gen(rd()); // Mersenne Twister RNG
