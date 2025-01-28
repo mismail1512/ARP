@@ -35,7 +35,6 @@ add_executable(targets_gen targets_gen.cpp)
 add_executable(dynamics_server dynamics_server.cpp)
 add_executable(input input.cpp)
 add_executable(watchdog watchdog.cpp)
-add_executable(Master_Process Master_Process.cpp)
 
 
 
@@ -48,7 +47,6 @@ target_link_libraries(targets_gen PRIVATE data_formats objects_generator logger)
 target_link_libraries(dynamics_server PRIVATE params_manager data_formats objects_generator dynamics logger)
 target_link_libraries(input PRIVATE data_formats logger)
 target_link_libraries(watchdog PRIVATE data_formats logger)
-target_link_libraries(Master_Process PRIVATE data_formats objects_generator visualizer dynamics ncurses logger)
 
 
 target_include_directories(board PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -59,4 +57,3 @@ target_include_directories(dynamics_server PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/in
 target_include_directories(input PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(logger PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(watchdog PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_include_directories(Master_Process PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
