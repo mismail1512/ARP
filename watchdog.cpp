@@ -21,35 +21,15 @@ namespace fs = std::filesystem;
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
 
-<<<<<<< HEAD
-void handlePauseSignal(int signal) {
-    if (signal == SIGUSR1) { // 'p'
-        //std::cout << "Window process: Received 'p'. Pausing..." << std::endl;
-        shouldPause.store(true);
-    }
-}
-
-void handleResumeSignal(int signal) {
-    if (signal == SIGUSR2) { // 'st'
-        //std::cout << "Window process: Received 'st'. Resuming..." << std::endl;
-        sleep(5);
-        shouldPause.store(false);
-    }
-}
-
-
-=======
 void handlePauseResumeSignal(int signal) {
     if (signal == SIGUSR1) { // 'p'
         // Toggle the pause state
         bool current = shouldPause.load();
         shouldPause.store(!current); // Flip the state
-
-       
+        sleep(5);
     }
 }
 
->>>>>>> 58c11fb (Initial commit for my project)
 
 // Helper function to read the last heartbeat from a log file
 std::time_t get_last_heartbeat(const std::string& logfile, pid_t& pid) {
@@ -136,22 +116,9 @@ int main() {
     pidFile << pid;
     pidFile.close();
 
-<<<<<<< HEAD
-    // Register the signal handlers
-    signal(SIGUSR1, handlePauseSignal);
-    signal(SIGUSR2, handleResumeSignal);
-
-
-   /** for (const auto& entry : fs::directory_iterator(log_directory)) {
-        if (fs::is_regular_file(entry)) {
-            // Monitor each log file
-           std::cout << entry.path()<< std::endl;
-        }
-    }*/
-=======
     // Register the signal handler
     signal(SIGUSR1, handlePauseResumeSignal);
->>>>>>> 58c11fb (Initial commit for my project)
+
 
 
     // Ensure the log directory exists
@@ -166,13 +133,8 @@ int main() {
     while (true) {
         while (shouldPause.load()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
-<<<<<<< HEAD
-        }
-=======
-            
         }
         sleep(2);
->>>>>>> 58c11fb (Initial commit for my project)
         if (monitor_logs(log_directory, timeout_seconds)) {
             terminate_all_processes(log_directory);
             exit(1); // Exit after terminating all processes
