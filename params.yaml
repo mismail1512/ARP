@@ -1,6 +1,6 @@
 # Parameters related to the drone's physical characteristics and dynamics
 drone:
-  mass: 1.0                  # Mass of the drone in kg
+  mass: 1                 # Mass of the drone in kg
   viscous_coefficient: 0.01      # Viscous resistance coefficient (N·s·m)
   max_acceleration: 10.0        # Maximum acceleration (m/s^2)
   max_velocity: 20.0            # Maximum velocity (m/s)
