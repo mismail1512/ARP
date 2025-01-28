@@ -371,10 +371,11 @@ The Params Manager reads and manages simulation parameters from the params.yaml 
 
 ## Installation and Running Instructions
  
-1- create the lods directory
+1- After dounloading the repo, create the logs and build directories
 
 ```
 mkdir logs
+mkdir buld
 ```
 
 2- build and run
