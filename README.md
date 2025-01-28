@@ -196,7 +196,7 @@ w e r
 s d f
 x c v
 
-p to pause\start and reset to reset
+ps to pause\start and reset to reset
 ```
 
 The center key (d) acts as a brake.
@@ -205,9 +205,7 @@ The center key (d) acts as a brake.
 
 - Handles signals:
 
-p: Pause the simulation.
-
-st: Start/resume the simulation.
+ps: Pause the simulation / Start the simulation.
 
 reset: Reset the simulation.
 
@@ -372,18 +370,17 @@ The Params Manager reads and manages simulation parameters from the params.yaml 
 
 
 ## Installation and Running Instructions
+ 
+1- create the lods directory
 
-go to build and make 
 ```
-cmake
-
-cd build
-make
+mkdir logs
 ```
 
-to run 
+2- build and run
 ```
-cd ..
-./exec.sh
-./exec1.sh
+./build.sh
+./run.sh
 ```
+
+
