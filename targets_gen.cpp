@@ -18,21 +18,6 @@
 // Atomic flag to indicate if the process should pause
 std::atomic<bool> shouldPause(false);
 
-<<<<<<< HEAD
-void handlePauseSignal(int signal) {
-    if (signal == SIGUSR1) { // 'p'
-        //std::cout << "Window process: Received 'p'. Pausing..." << std::endl;
-        shouldPause.store(true);
-    }
-}
-
-void handleResumeSignal(int signal) {
-    if (signal == SIGUSR2) { // 'st'
-        //std::cout << "Window process: Received 'st'. Resuming..." << std::endl;
-        shouldPause.store(false);
-    }
-}
-=======
 void handlePauseResumeSignal(int signal) {
     if (signal == SIGUSR1) { // 'p'
         // Toggle the pause state
@@ -41,7 +26,6 @@ void handlePauseResumeSignal(int signal) {
     }
 }
 
->>>>>>> 58c11fb (Initial commit for my project)
 
 int main(int argc, char *argv[] ) {
    pid_t pid = getpid(); // Get the current process ID
@@ -51,15 +35,9 @@ std::ofstream pidFile("/tmp/targ.pid");
     pidFile << pid;
     pidFile.close();
 
-<<<<<<< HEAD
-    // Register the signal handlers
-    signal(SIGUSR1, handlePauseSignal);
-    signal(SIGUSR2, handleResumeSignal);
-=======
     // Register the signal handler
     signal(SIGUSR1, handlePauseResumeSignal);
 
->>>>>>> 58c11fb (Initial commit for my project)
 
     // Initialization
     // Making pipes
