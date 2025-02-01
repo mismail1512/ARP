@@ -11,9 +11,12 @@ Project Overview
 
 Directory Structure
 
+System Communication Architecture Graph
+
 Active Components
 
 Installation and Running Instructions
+
 
 
 
@@ -103,6 +106,13 @@ ARP Project/
 │   ├── targets_gen.log
 │   └── window.log
 ```
+
+## System Communication Architecture Graph
+
+Here is a simple system communication architecture graph for the processes of the drone simulator.
+
+![System Communication Architecture](communication_graph.png)
+
 
 ##  Active Components
 
