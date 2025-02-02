@@ -115,7 +115,7 @@ Here is a simple system communication architecture graph for the processes of th
 ### The architecture for the communication via signals ( Pause/start and reset )
  
 
-![System Communication Architecture](Signals for PST.png)
+![System Communication Architecture](Signals_pause.png)
 
 
 ### The architecture for the communication via pipes ( named and unnamed pipes )
@@ -125,7 +125,7 @@ Here is a simple system communication architecture graph for the processes of th
 
 ### The architecture for the communication (end signals from watchdog)
 
-![System Communication Architecture](Signals form watchdog.png)
+![System Communication Architecture](End_Signals.png)
 
 
 The system communication architecture graph (combined version).
