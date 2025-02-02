@@ -109,7 +109,26 @@ ARP Project/
 
 ## System Communication Architecture Graph
 
+
 Here is a simple system communication architecture graph for the processes of the drone simulator.
+
+### The architecture for the communication via signals ( Pause/start and reset )
+ 
+
+![System Communication Architecture](Signals for PST.png)
+
+
+### The architecture for the communication via pipes ( named and unnamed pipes )
+
+![System Communication Architecture](communication_pipes.png)
+
+
+### The architecture for the communication (end signals from watchdog)
+
+![System Communication Architecture](Signals form watchdog.png)
+
+
+The system communication architecture graph (combined version).
 
 ![System Communication Architecture](communication_graph.png)
 
