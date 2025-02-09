@@ -156,10 +156,10 @@ int main()
         write(dynamics_to_board_fd_write,&drone_position,sizeof(drone_position));
         usleep(UPDATE_TIME);
         if (reset){
-            drone_position = {5.0,5.0};
-            positions_hist[0] = {5.0,5.0};
-            positions_hist[1] = {5.0,5.0};
-            positions_hist[2] = {5.0,5.0};
+            drone_position = {DRONE_POS_X,DRONE_POS_Y};
+            positions_hist[0] = {DRONE_POS_X,DRONE_POS_Y};
+            positions_hist[1] = {DRONE_POS_X,DRONE_POS_Y};
+            positions_hist[2] = {DRONE_POS_X,DRONE_POS_Y};
             reset = false;
 
         }

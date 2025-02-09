@@ -15,14 +15,14 @@
 
 constexpr int START_X = 0;
 constexpr int START_Y = 0;
-constexpr int WIDTH = 10;
-constexpr int HEIGHT = 10;
+constexpr int WIDTH = 50;
+constexpr int HEIGHT = 20;
 constexpr double DRONE_POS_X = 5.0;
 constexpr double DRONE_POS_Y = 5.0;
 
 
-constexpr int target_number = 3;
-constexpr int obstacles_number = 3;
+constexpr int target_number = 20;
+constexpr int obstacles_number = 5;
 
 constexpr float w1 = 100;
 constexpr float w2 = 0.1; // -1 every 10 seconds

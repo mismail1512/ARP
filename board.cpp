@@ -43,9 +43,7 @@ void handleResetSignal(int signal) {
 
 
 int calcScore(int targets ,double time,float distance){
-    float targetsRatio = static_cast<float>(target_number-targets)/target_number;
-    // std::cout << "distance " << distance << " time " << time << std::endl;
-    
+    float targetsRatio = static_cast<float>(target_number-targets)/target_number;    
     return w1*targetsRatio-w2*time - w3*distance ;
 }
 
@@ -192,10 +190,8 @@ int main()
         }
 
         // Log heartbeat to indicate that the process is still active
-        log.logHeartbeat();  // Log heartbeat at each iteration to ensure the watchdog monitors this process
-       // while (shouldPause.load()) {
-         //   std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
-        //}
+        log.logHeartbeat();  
+
         
         selectPipes(r_fds,w_fds,std::vector<int>{dynamics_to_board_fd_read,input_to_board_pipe_fd}
         ,std::vector<int>{windowfd,board_to_dynamics_fd_write});
@@ -205,10 +201,6 @@ int main()
         {
             write(windowfd,&worldState,sizeof(worldState));
         }
-            
-        
-            
-        
        
         tempWorldState = worldState;
         usleep(UPDATE_TIME);
@@ -223,19 +215,7 @@ int main()
             
         
         readObstacles(obstaclesSub,worldState.obstacles_positions);
-        
-        drone_position.x = round(worldState.getDronePos().x);
-        drone_position.y = round(worldState.getDronePos().y);
-
-        // Check if the drone is on the current target
-        if (drone_position == worldState.targets_positions[currentTargetIdx]) {
-            // Remove the target
-            worldState.targets_positions[currentTargetIdx] = {NAN, NAN};
-            currentTargetIdx++;
-        }
-        // return it back to original
-        drone_position =   worldState.getDronePos();  
-
+        // update position section
         if (FD_ISSET(board_to_dynamics_fd_write,&w_fds))
         {
             write(board_to_dynamics_fd_write,&worldState,sizeof(worldState));
@@ -247,60 +227,68 @@ int main()
         {
             wroteToDynamics = false;
             read(dynamics_to_board_fd_read,&drone_position,sizeof(drone_position));
-            // std::cout << "reading drone pos " << drone_position << std::endl;
         }
 
-        worldState.drone_position = drone_position;
-
-         
-    
-        // update all obstacles
-        i =0;
-        for(const Point& point:worldState.obstacles_positions){
-            all_obstacles[i] = point;
-            i++;
-        }   
+        // reject big jumps
+        if(drone_position.dist(worldState.drone_position) > 2)
+            drone_position = worldState.drone_position;
+        // Check if the drone is on the current target
         // check to make sure that we don't run into an obstacle
         temp_drone_position.x = round(drone_position.x);
         temp_drone_position.y = round(drone_position.y);
+        worldState.drone_position = drone_position;
 
-            
-        if(std::find(all_obstacles.begin(), all_obstacles.end(), temp_drone_position) != all_obstacles.end()
-        || temp_drone_position.x> borders.startX+borders.width || temp_drone_position.x> borders.startY+borders.height+1)
+        // update all obstacles
+        i = 0;
+        for (const Point &point : worldState.obstacles_positions)
+        {
+            all_obstacles[i] = point;
+            i++;
+        }
+        // check if we ran into an obstacle
+        if (std::find(all_obstacles.begin(), all_obstacles.end(), temp_drone_position) != all_obstacles.end() || temp_drone_position.x > borders.startX + borders.width || temp_drone_position.y > borders.startY + borders.height + 1)
         {
             // obstacle in the same place as the drone
             // invalid state
             // fall into the previous state
             worldState = tempWorldState;
-        } 
-        else{
+        }
+        else
+        {
+            // update distance
             distance += tempWorldState.drone_position.dist(worldState.drone_position);
-        }     
-        targetsNumber=0;
-        
-        for (const Point& point:worldState.targets_positions){
-            if(!point.isNull()){
-                targetsNumber++;
+            // handle running into the current target
+            if (temp_drone_position == worldState.targets_positions[currentTargetIdx]) {
+                // Remove the target    
+                worldState.targets_positions[currentTargetIdx] = {NAN, NAN};
+                currentTargetIdx++;
             }
-                
         }
        if (reset) 
         {
             drone_position = {DRONE_POS_X, DRONE_POS_Y};
-            worldState.drone_position = drone_position;
             worldState.score = 0;
             time =0;
-            distance=0;
+            distance=0.0;
             
 
             // Reinitialize WorldState
             worldState.drone_position = drone_position;
             tempWorldState.drone_position = drone_position;
             readTargets(targetsSub,worldState.targets_positions);
+            currentTargetIdx = 0;
             reset = false;
         }
+        targetsNumber=0;
+        
+        for (const Point& point:worldState.targets_positions){
+            if(!point.isNull()){
+                targetsNumber++;
+            }   
+        }
+
         worldState.score = calcScore(targetsNumber,time,distance); 
-        printf("Score: %d\n", worldState.score);
+        // printf("Score: %d\n", worldState.score);
     }
     close(windowfd);
     close(dynamics_to_board_fd_read);

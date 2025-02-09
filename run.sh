@@ -7,6 +7,14 @@ if [ ! -d "$LOG_FOLDER" ]; then
 else
     echo "Log folder already exists."
 fi
+
+
+
+
+
+
+
+
 # Display the initial message
 echo "Make sure the config.h variables TARGETS_TOPIC_NAME, OBSTACLES_TOPIC_NAME, START_X, START_Y, WIDTH, HEIGHT, DRONE_POS_X, DRONE_POS_Y, target_number, obstacles_number are the same on both sides."
 
@@ -18,14 +26,23 @@ read -r choice
 # Execute logic based on user's choice
 if [ "$choice" -eq 1 ]; then
     echo "Running target and obstacle generators..."
+    pkill obstacles_gen
+    pkill targets_gen
     ./build/obstacles_gen &
     ./build/targets_gen 
 elif [ "$choice" -eq 2 ]; then
+
     echo "Running the main application..."
+
+    
+    rm /tmp/window
+    rm /tmp/input_to_board
+    pkill board
+    pkill window
     ./build/board &
     konsole -e ./build/input &
     konsole -e ./build/window &
-    ./build/watchdog
+    # ./build/watchdog
 else
     echo "Invalid choice. Please enter 1 or 2."
 fi

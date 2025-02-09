@@ -31,21 +31,22 @@ void handleResumeSignal(int signal) {
     }
 }*/
 
-int main(int argc, char* argv[]) {
-//std::cout << "Window process running. PID: " << pid << std::endl;
-pid_t pid = getpid();
+int main(int argc, char *argv[])
+{
+    // std::cout << "Window process running. PID: " << pid << std::endl;
+    pid_t pid = getpid();
 
-std::ofstream pidFile("/tmp/window_process.pid");
+    std::ofstream pidFile("/tmp/window_process.pid");
     pidFile << pid;
     pidFile.close();
     std::cout << "Window process running. PID: " << pid << std::endl;
 
-////////////
+    ////////////
     logger log("./logs/window.log", pid); // Initialize logger for this process with a unique log file
 
-   // Register the signal handlers
-   // signal(SIGUSR1, handlePauseSignal);
-    //signal(SIGUSR2, handleResumeSignal);
+    // Register the signal handlers
+    // signal(SIGUSR1, handlePauseSignal);
+    // signal(SIGUSR2, handleResumeSignal);
 
     mkfifo(windowPipe, 0666);
     int windowfd = open(windowPipe, O_RDONLY | O_CREAT | O_TRUNC, 0666);
@@ -54,27 +55,27 @@ std::ofstream pidFile("/tmp/window_process.pid");
     read(windowfd, &worldState, sizeof(worldState));
 
     Visualizer vis{worldState.getBorder()};
-    WINDOW* win = vis.generateWindow();
+    WINDOW *win = vis.generateWindow();
 
     std::vector<Point> tars(target_number);
     std::vector<Point> obs(obstacles_number);
     int i;
 
-    while (true) {
-        // Check if we should pause
-         //while (shouldPause.load()) {
-           // std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Wait until resume signal is received
-           //}
+    while (true)
+    {
+       
 
         // Log heartbeat after sending targets
         log.logHeartbeat();
         i = 0;
-        for (const Point& point : worldState.targets_positions) {
+        for (const Point &point : worldState.targets_positions)
+        {
             tars[i] = point;
             i++;
         }
         i = 0;
-        for (const Point& point : worldState.obstacles_positions) {
+        for (const Point &point : worldState.obstacles_positions)
+        {
             obs[i] = point;
             i++;
         }
@@ -86,8 +87,8 @@ std::ofstream pidFile("/tmp/window_process.pid");
         vis.draw(win, drone_pos, tars, obs);
         // Display the score below the border
         wattron(win, COLOR_PAIR(1)); // Enable yellow color
-        
-        mvwprintw(win, worldState.getBorder().startY , 1, "Score: %d ", worldState.score);
+
+        mvwprintw(win, worldState.getBorder().startY, 1, "Score: %d ", worldState.score);
         wattroff(win, COLOR_PAIR(1)); // Disable yellow color
         vis.refresh(win);
 

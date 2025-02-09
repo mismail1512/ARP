@@ -25,8 +25,7 @@ Command AssignCommand(const std::string& str) {
         {"x", Command::x},
         {"c", Command::c},
         {"v", Command::v},
-        {"p", Command::p},
-        {"st", Command::st},
+        {"ps", Command::ps},
         {"reset", Command::reset},
     };
     auto it = cmdMap.find(str);
@@ -47,7 +46,7 @@ int main() {
 
     while (true) {
         std::cout << "Enter one of the following commands to move\n w,e,r,\ns,d,f,\nx,c,v\n" << std::endl;
-        std::cout << "p to pause\nst to start again\nreset to reset" << std::endl;
+        std::cout << "ps to pause and to start again\nreset to reset" << std::endl;
         std::cin >> inputString;
         
         
@@ -67,32 +66,22 @@ int main() {
     std::ifstream pid_board("/tmp/board.pid");    
     std::ifstream pid_watchdog("/tmp/watchdog.pid");    
 
-    if (cmd == Command::p || cmd == Command::st|| cmd == Command::reset) 
+    if (cmd == Command::ps ||  cmd == Command::reset) 
     {
     
-            if (pid_dynamic >> dynmaicProcessPID && pid_obs >> obsProcessPID && pid_targ >> targProcessPID&& pid_board >> boardProcessPID&& pid_watchdog >> watchdogProcessPID ) 
+            if (pid_dynamic >> dynmaicProcessPID &&  pid_board >> boardProcessPID&& pid_watchdog >> watchdogProcessPID ) 
             {
                 std::cout << "Read Processes PIDs: " << dynmaicProcessPID<< ", " << obsProcessPID<< ", " <<  targProcessPID<<", " <<  boardProcessPID<<", " <<  watchdogProcessPID<<std::endl;
 
                 // Send the appropriate signal based on the command
-                if (cmd == Command::p) {
+                if (cmd == Command::ps) {
                     // Pause the window process
-                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(obsProcessPID, SIGUSR1) == 0)&& (kill(targProcessPID, SIGUSR1) == 0&& (kill(watchdogProcessPID, SIGUSR1) == 0)&& (kill(boardProcessPID, SIGUSR1) == 0))) {
-                        std::cout << "Signal sent successfully to pause process (PID: " << dynmaicProcessPID<< ", " << obsProcessPID<< ", " <<  targProcessPID<<", "<<  watchdogProcessPID<<std::endl;
+                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(boardProcessPID, SIGUSR1) == 0)) {
+                        std::cout << "Signal sent successfully to pause process (PID: " << dynmaicProcessPID<< ", " << ", " <<", "<<  watchdogProcessPID<<std::endl;
                     } else {
                         perror("Failed to send pause signal");
                     }
-                } else if (cmd == Command::st) {
-                    // Resume the window process
-                    if ((kill(dynmaicProcessPID, SIGUSR1) == 0)&& (kill(obsProcessPID, SIGUSR2) == 0)&& (kill(targProcessPID, SIGUSR2) == 0&& (kill(watchdogProcessPID, SIGUSR2) == 0)&& (kill(boardProcessPID, SIGUSR1) == 0))) {
-                        std::cout << "Signal sent successfully to start process (PID: " << dynmaicProcessPID<< ", " << obsProcessPID<< ", " <<  targProcessPID <<", " <<  watchdogProcessPID<<std::endl;
-                    } 
-                    
-                    else {
-                        perror("Failed to send resume signal");
-                    }
-                }
-
+                } 
             else if (cmd == Command::reset)
             {
 

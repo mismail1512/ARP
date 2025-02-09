@@ -103,7 +103,7 @@ int main(int argc, char *argv[] ) {
         // Sending obstacles to the board
         pubObstacle(mypub,obstaclesToSend);
         // Sleep for a while before next update
-        usleep(500 * UPDATE_TIME);
+        usleep(300 * UPDATE_TIME);
 
 
         // Adjust drone position (round to nearest integer)
