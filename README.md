@@ -37,7 +37,7 @@ Real-time logging and parameter management via a YAML file.
 
 The drone's movement is governed by a 2-degree-of-freedom dynamic model with inertia and viscous resistance. Obstacles and targets exert forces on the drone using the Latombe/Kathib model.
 
-Directory Structure
+## Directory Structure
 The system is divided into multiple processes communicating via pipes and shared memory. Below is a high-level architecture diagram:
 
 
