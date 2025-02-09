@@ -96,9 +96,9 @@ int main()
     // Convert fd_str to an integer
     int board_to_dynamics_fd_read = atoi(fd_str);
     // initializations
-    std::cout << board_to_dynamics_fd_read << std::endl;
-    std::cout << dynamics_to_board_fd_write << std::endl;
-    Point drone_position{5.0,5.0};
+    // std::cout << board_to_dynamics_fd_read << std::endl;
+    // std::cout << dynamics_to_board_fd_write << std::endl;
+    Point drone_position{DRONE_X,DRONE_Y};
     WorldState<obstacles_number,target_number> worldState{drone_position};
     Dynamics dynamics{};
     // Command cmd{Command::f};
@@ -156,10 +156,10 @@ int main()
         write(dynamics_to_board_fd_write,&drone_position,sizeof(drone_position));
         usleep(UPDATE_TIME);
         if (reset){
-            drone_position = {5.0,5.0};
-            positions_hist[0] = {5.0,5.0};
-            positions_hist[1] = {5.0,5.0};
-            positions_hist[2] = {5.0,5.0};
+            drone_position = {DRONE_X,DRONE_Y};
+            positions_hist[0] = {DRONE_X,DRONE_Y};
+            positions_hist[1] = {DRONE_X,DRONE_Y};
+            positions_hist[2] = {DRONE_X,DRONE_Y};
             reset = false;
 
         }

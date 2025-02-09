@@ -12,8 +12,15 @@
 
 #define UPDATE_TIME 10000
 
-constexpr int target_number = 3;
-constexpr int obstacles_number = 3;
+constexpr int target_number = 20;
+constexpr int obstacles_number = 2;
+
+constexpr int BORDER_WIDTH = 50;
+constexpr int BORDER_HEIGHT = 20;
+
+
+constexpr float DRONE_X = 5.0;
+constexpr float DRONE_Y = 5.0;
 
 constexpr float w1 = 100;
 constexpr float w2 = 0.1; // -1 every 10 seconds

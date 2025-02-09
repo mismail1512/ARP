@@ -32,7 +32,7 @@ int main(int argc, char *argv[] ) {
     pid_t pid = getpid(); // Get the current process ID
     logger log("./logs/obstacles_gen.log", pid); // Initialize logger for this process with a unique log file
 
-std::ofstream pidFile("/tmp/obst.pid");
+    std::ofstream pidFile("/tmp/obst.pid");
     pidFile << pid;
     pidFile.close();
 

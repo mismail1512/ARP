@@ -27,6 +27,7 @@ class Dynamics
 
     //public:
         params_manager params_manager1 ;
+        std::map<std::string, float> params;
         Dynamics();
         Dynamics(const std::map<std::string, float>& params);
         void refresh();
