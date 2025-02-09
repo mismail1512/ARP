@@ -7,15 +7,15 @@
 
 ## Table of Contents
 
-Project Overview
+* Project Overview
 
-Directory Structure
+* Directory Structure
 
-System Communication Architecture Graph
+* System Communication Architecture Graph
 
-Active Components
+* Active Components
 
-Installation and Running Instructions
+* Installation and Running Instructions
 
 
 
