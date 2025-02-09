@@ -227,7 +227,9 @@ int main()
         }
         if(FD_ISSET(targets_to_board_fd, &r_fds))
             read(targets_to_board_fd, &default_target_pos, sizeof(worldState.targets_positions));
-
+        // reject big jumps
+        if(drone_position.dist(worldState.drone_position) > 2)
+            drone_position = worldState.drone_position;
         // Check if the drone is on the current target
         // check to make sure that we don't run into an obstacle
         temp_drone_position.x = round(drone_position.x);
