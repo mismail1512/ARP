@@ -43,7 +43,8 @@ void handleResetSignal(int signal) {
 
 
 int calcScore(int targets ,double time,float distance){
-    float targetsRatio = static_cast<float>(target_number-targets)/target_number;    
+    float targetsRatio = static_cast<float>(target_number-targets)/target_number;
+    
     return w1*targetsRatio-w2*time - w3*distance ;
 }
 
