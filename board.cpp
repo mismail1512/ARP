@@ -54,7 +54,7 @@ void readTargets(DDSSubscriber<Targets,TargetsPubSubType>* targetsSub,Point targ
         return;
     for(int i=0;i<target_number;i++){
         targetsToSend[i] = Point{static_cast<double>(targets->targets_x()[i]) ,static_cast<double>(targets->targets_y()[i])};
-        std::cout << targetsToSend[i] << std::endl;
+        // std::cout << targetsToSend[i] << std::endl;
     }
 }
 void readObstacles(DDSSubscriber<Obstacles,ObstaclesPubSubType>* obstaclesSub,Point obstaclesToSend[obstacles_number]){

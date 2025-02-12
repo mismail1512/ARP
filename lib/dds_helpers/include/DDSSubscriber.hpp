@@ -64,10 +64,10 @@ private:
                 std::cout << "Subscriber matched." << std::endl;
                 eprosima::fastdds::rtps::LocatorList locators;
                 reader->get_listening_locators(locators);
-                // for (const eprosima::fastdds::rtps::Locator &locator : locators)
-                // {
-                //     print_transport_protocol(locator);
-                // }
+                for (const eprosima::fastdds::rtps::Locator &locator : locators)
+                {
+                    print_transport_protocol(locator);
+                }
             }
             else if (info.current_count_change == -1)
             {
