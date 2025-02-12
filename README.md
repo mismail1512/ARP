@@ -2,12 +2,12 @@
 
 ## **Overview**
 
-The goal of Part2 is to utilize **FastDDS** for seamless communication across multiple devices. The application is divided into two main components:
+The goal of Part2 is to utilize **FastDDS** for seamless communication across multiple devices using TCP. The application is divided into two main components:
 
 1. **Obstacles and Targets Generators**: These generate and continuously publish random obstacles and targets.
 2. **Main Application**: This manages the board, drone, and interactions with the generated obstacles and targets.
 
-The communication protocol used is **UDP v4**, which ensures efficient message delivery. Since the architecture is simple and small, **auto-discovery** is enabled, and occasional message loss is acceptable due to the continuous nature of message flow.
+The communication protocol used is **UDTCP**, which ensures accurate message delivery. Since the architecture is simple and small, **auto-discovery** is enabled, and occasional message loss is acceptable due to the continuous nature of message flow.
 
 ### **Important Note**
 
@@ -23,7 +23,7 @@ Before running the application:
    - `target_number`
    - `obstacles_number`
 
-These variables are crucial for ensuring proper communication and functionality between the components.
+These variables are crucial for ensuring proper communication and functionality between the devices.
 
 ---
 
