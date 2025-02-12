@@ -12,7 +12,7 @@
 
 #include <chrono>
 #include <thread>
-
+#include <fastdds/rtps/transport/TCPv4TransportDescriptor.hpp>
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
 #include <fastdds/dds/subscriber/DataReader.hpp>
@@ -64,10 +64,10 @@ private:
                 std::cout << "Subscriber matched." << std::endl;
                 eprosima::fastdds::rtps::LocatorList locators;
                 reader->get_listening_locators(locators);
-                for (const eprosima::fastdds::rtps::Locator &locator : locators)
-                {
-                    print_transport_protocol(locator);
-                }
+                // for (const eprosima::fastdds::rtps::Locator &locator : locators)
+                // {
+                //     print_transport_protocol(locator);
+                // }
             }
             else if (info.current_count_change == -1)
             {
@@ -122,6 +122,9 @@ private:
             case LOCATOR_KIND_SHM:
                 std::cout << "Using Shared Memory" << std::endl;
                 break;
+            case LOCATOR_KIND_TCPv4:
+                std::cout << "Using TCPV4" << std::endl;
+                break;
             default:
                 std::cout << "Unknown Transport" << std::endl;
                 break;
@@ -163,12 +166,9 @@ public:
     {
         DomainParticipantQos participantQos;
         participantQos.name("Participant_subscriber");
-
-        //  // Explicit configuration of shm transport
-        // participantQos.transport().use_builtin_transports = false;
-        // auto shm_transport = std::make_shared<SharedMemTransportDescriptor>();
-        // shm_transport->segment_size(10 * 1024 * 1024);
-        // participantQos.transport().user_transports.push_back(shm_transport);
+        participantQos.setup_transports(eprosima::fastdds::rtps::BuiltinTransports::LARGE_DATA);
+        
+        
 
         participant_ = DomainParticipantFactory::get_instance()->create_participant(1, participantQos);
 

@@ -26,8 +26,8 @@ read -r choice
 # Execute logic based on user's choice
 if [ "$choice" -eq 1 ]; then
     echo "Running target and obstacle generators..."
-    pkill obstacles_gen
-    pkill targets_gen
+    sudo pkill obstacles_gen
+    sudo pkill targets_gen
     ./build/obstacles_gen &
     ./build/targets_gen 
 elif [ "$choice" -eq 2 ]; then
@@ -37,8 +37,8 @@ elif [ "$choice" -eq 2 ]; then
     
     rm /tmp/window
     rm /tmp/input_to_board
-    pkill board
-    pkill window
+    sudo pkill board
+    sudo pkill window
     ./build/board &
     konsole -e ./build/input &
     konsole -e ./build/window &
