@@ -8,7 +8,9 @@ The goal of Part2 is to utilize **FastDDS** for seamless communication across mu
 2. **Main Application**: This manages the board, drone, and interactions with the generated obstacles and targets.
 
 The communication protocol used is **UDTCP**, which ensures accurate message delivery. Since the architecture is simple and small, **auto-discovery** is enabled, and occasional message loss is acceptable due to the continuous nature of message flow.
+### The architecture for the communication 
 
+![System Communication Architecture](DDS.png)
 ### **Important Note**
 
 Before running the application:
