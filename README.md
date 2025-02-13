@@ -120,7 +120,7 @@ Here is a simple system communication architecture graph for the processes of th
 
 ### The architecture for the communication via pipes ( named and unnamed pipes )
 
-![System Communication Architecture](communication_pipes.png)
+![System Communication Architecture](communication_pipes1.png)
 
 
 ### The architecture for the communication (end signals from watchdog)
