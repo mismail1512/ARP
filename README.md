@@ -24,6 +24,16 @@ Before running the application:
    - `obstacles_number`
 
 These variables are crucial for ensuring proper communication and functionality between the devices.
+### The architecture for the communication 
+
+![System Communication Architecture](DDS.png)
+
+
+### Test Video 
+
+Here you will find a test video for the  DDS --> the test on two computers on is publisher and the other is subscriber and vise versa
+
+https://drive.google.com/file/d/1DJTD1fpjzmkX70z_RnElX_fs9wNN3nM6/view?usp=sharing
 
 ---
 
@@ -80,4 +90,5 @@ When the drone steps on a target (starting with the smallest number), the **boar
 - Updates the score based on predefined rules.
 
 ---
+
 
